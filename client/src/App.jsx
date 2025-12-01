@@ -77,25 +77,25 @@ const INITIAL_PEOPLE = ["佑瑋", "小白", "旅伴C", "旅伴D", "旅伴E"];
 
 // --- Loading Spinner Component ---
 const LoadingSpinner = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+  <div className="flex items-center justify-center min-h-screen jh-bg-paper">
     <div className="text-center">
-      <Loader className="animate-spin text-purple-600 mx-auto mb-4" size={48} />
-      <p className="text-purple-700 font-medium">載入中...</p>
+      <Loader className="animate-spin text-jh-indigo mx-auto mb-4" size={48} />
+      <p className="text-jh-text font-medium">載入中...</p>
     </div>
   </div>
 );
 
 // --- Error Display Component ---
 const ErrorDisplay = ({ message, onRetry }) => (
-  <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-red-50 to-orange-50">
-    <div className="bg-white border-2 border-red-300 rounded-2xl p-8 max-w-md text-center shadow-2xl">
-      <AlertCircle className="text-red-500 mx-auto mb-4" size={48} />
-      <h3 className="text-lg font-bold text-red-900 mb-2">載入失敗</h3>
-      <p className="text-red-700 mb-4">{message}</p>
+  <div className="flex items-center justify-center min-h-screen p-4 jh-bg-paper">
+    <div className="bg-jh-card rounded-2xl p-8 max-w-md text-center shadow-lg border-jh-card-border">
+      <AlertCircle className="text-jh-rose mx-auto mb-4" size={48} />
+      <h3 className="text-lg font-bold text-jh-text mb-2">載入失敗</h3>
+      <p className="text-jh-sub mb-4">{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="flex items-center gap-2 mx-auto bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-xl hover:from-red-600 hover:to-orange-600 transition-all shadow-lg"
+          className="flex items-center gap-2 mx-auto jh-btn-primary px-6 py-3 rounded-xl text-white shadow"
         >
           <RefreshCw size={16} /> 重試
         </button>
@@ -116,10 +116,10 @@ const DetailModal = ({ isOpen, onClose, item, onEdit }) => {
   const imageUrl = item.imageUrl || getFixedImage(item.id);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/70 print:hidden">
-      <div className="bg-gradient-to-br from-white via-pink-50 to-purple-50 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 relative border-4 border-purple-200">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/60 print:hidden">
+      <div className="jh-card rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 relative border-4 border-jh-card-border">
         <div className="relative h-64 overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-200 to-pink-200 animate-pulse" />
+          <div className="absolute inset-0 jh-image-overlay" />
           <img
             src={imageUrl}
             alt={item.title}
@@ -128,7 +128,7 @@ const DetailModal = ({ isOpen, onClose, item, onEdit }) => {
           />
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 p-2 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-full hover:from-purple-600 hover:to-pink-600 transition-all backdrop-blur-sm z-10 shadow-lg"
+            className="absolute top-3 right-3 p-2 jh-btn-primary text-white rounded-full z-10 shadow-lg"
           >
             <X size={20} />
           </button>
@@ -216,8 +216,8 @@ const EditModal = ({ isOpen, onClose, item, onSave, onDelete, saving }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-md bg-black/70 print:hidden">
-      <div className="bg-gradient-to-br from-white via-purple-50 to-pink-50 w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl p-6 shadow-2xl animate-in slide-in-from-bottom duration-300 border-t-4 border-purple-500 max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-md bg-black/60 print:hidden">
+      <div className="jh-card w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl p-6 shadow-2xl animate-in slide-in-from-bottom duration-300 border-t-4 border-jh-accent max-h-[90vh] overflow-y-auto">
         <h3 className="text-xl font-black mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2 font-serif border-b-2 border-purple-300 pb-3">
           {item.id ? <Edit size={24} className="text-purple-600" /> : <Plus size={24} className="text-purple-600" />}
           {item.id ? '編輯行程' : '新增行程'}
@@ -552,7 +552,7 @@ export default function App() {
         </div>
 
         {/* Day Selector */}
-        <div className="sticky top-0 z-40 bg-gradient-to-r from-purple-100 via-pink-100 to-blue-100 backdrop-blur-md border-b-4 border-purple-400 shadow-xl overflow-x-auto no-scrollbar print:relative">
+        <div className="sticky top-0 z-40 jh-day-selector backdrop-blur-md border-b shadow-xl overflow-x-auto no-scrollbar print:relative">
           <div className="flex p-3 gap-2 min-w-max">
             {days.map(d => (
               <button
@@ -560,11 +560,11 @@ export default function App() {
                 onClick={() => setCurrentDay(d.day)}
                 className={`flex flex-col items-center px-5 py-3 rounded-2xl transition-all duration-300 border-3 shadow-md ${
                   currentDay === d.day
-                  ? 'bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 text-white shadow-2xl border-transparent scale-110'
-                  : 'bg-white text-purple-600 hover:bg-purple-50 border-purple-300'
+                  ? 'jh-active scale-110'
+                  : 'bg-white text-jh-accent hover:bg-jh-soft border-jh-muted'
                 }`}
               >
-                <span className={`text-xs uppercase tracking-wider font-bold mb-0.5 ${currentDay === d.day ? 'text-yellow-300' : 'text-purple-400'}`}>
+                <span className={`text-xs uppercase tracking-wider font-bold mb-0.5 ${currentDay === d.day ? 'text-jh-gold' : 'text-jh-muted'}`}>
                   Day {d.day}
                 </span>
                 <span className="text-sm font-bold whitespace-nowrap font-serif">{d.date.split(' ')[0]}</span>
@@ -609,26 +609,24 @@ export default function App() {
 
               // Colorful gradient based on type
               const typeGradients = {
-                transport: 'from-blue-500 to-cyan-500',
-                meal: 'from-orange-500 to-yellow-500',
-                hotel: 'from-purple-500 to-pink-500',
-                flight: 'from-indigo-500 to-blue-500',
-                spot: 'from-pink-500 to-rose-500'
+                transport: 'jh-grad-transport',
+                meal: 'jh-grad-meal',
+                hotel: 'jh-grad-hotel',
+                flight: 'jh-grad-flight',
+                spot: 'jh-grad-spot'
               };
 
               return (
                 <div key={item.id} className="relative pl-20 group">
                   {/* Enhanced Timeline Dot & Time */}
                   <div className="absolute left-0 top-0 flex flex-col items-center z-10">
-                     <div className={`relative w-14 h-14 rounded-full border-4 border-white shadow-2xl flex items-center justify-center font-bold
-                        bg-gradient-to-br ${typeGradients[item.type] || typeGradients.spot} text-white
-                     `}>
+                     <div className={`relative w-14 h-14 rounded-full border-4 border-white shadow-2xl flex items-center justify-center font-bold ${typeGradients[item.type] || typeGradients.spot} text-white`}>
                        <div className="text-center">
                          <div className="text-sm leading-none font-black">{item.time.split(':')[0]}</div>
                          <div className="text-[10px] leading-none mt-0.5 opacity-90">:{item.time.split(':')[1]}</div>
                        </div>
                        {/* Pulse animation */}
-                       <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${typeGradients[item.type] || typeGradients.spot} animate-ping opacity-20`}></div>
+                       <div className={`absolute inset-0 rounded-full ${typeGradients[item.type] || typeGradients.spot} animate-ping opacity-20`}></div>
                      </div>
                   </div>
 
@@ -708,137 +706,136 @@ export default function App() {
         </div>
       </div>
     );
-  };
 
-  // ==================== EXPENSE VIEW ====================
-  const ExpenseView = () => (
-    <div className="p-5 max-w-3xl mx-auto pb-28">
-      {/* Print Button */}
-      <div className="print:hidden flex justify-end mb-4">
-        <button
-          onClick={handlePrint}
-          className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-full font-bold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg active:scale-95"
-        >
-          <Printer size={18} />
-          列印費用明細
-        </button>
-      </div>
+    // ==================== EXPENSE VIEW ====================
+    const ExpenseView = () => (
+      <div className="p-5 max-w-3xl mx-auto pb-28">
+        {/* Print Button */}
+        <div className="print:hidden flex justify-end mb-4">
+          <button
+            onClick={handlePrint}
+            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-full font-bold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg active:scale-95"
+          >
+            <Printer size={18} />
+            列印費用明細
+          </button>
+        </div>
 
-      <h2 className="text-3xl font-black mb-6 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent flex items-center gap-2 font-serif">
-        <Wallet className="text-green-600" size={28} /> 旅費帳本
-      </h2>
+        <h2 className="text-3xl font-black mb-6 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent flex items-center gap-2 font-serif">
+          <Wallet className="text-green-600" size={28} /> 旅費帳本
+        </h2>
 
-      {/* Flight Cost Input */}
-      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 mb-6 border-3 border-blue-300 shadow-lg print:hidden">
-        <h3 className="font-bold text-blue-800 mb-4 flex items-center gap-2 text-lg">
-          <Plane size={20} /> 機票費用
-        </h3>
-        <div className="grid grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-bold text-blue-700 mb-2">每人機票價格 (TWD)</label>
-            <input
-              type="number"
-              value={flightCost}
-              onChange={(e) => setFlightCost(parseInt(e.target.value) || 0)}
-              className="w-full p-3 bg-white border-2 border-blue-300 rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
-              placeholder="15000"
-            />
-          </div>
-          <div className="flex items-end">
-            <div className="bg-blue-100 p-4 rounded-xl border-2 border-blue-300 w-full shadow-sm">
-              <div className="text-xs text-blue-600 font-bold mb-1">總機票費用</div>
-              <div className="text-2xl font-black text-blue-800 font-mono">¥{totalFlightCost.toLocaleString()}</div>
-              <div className="text-xs text-blue-600 mt-1">{INITIAL_PEOPLE.length} 人 × ¥{flightCost.toLocaleString()}</div>
+        {/* Flight Cost Input */}
+        <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 mb-6 border-3 border-blue-300 shadow-lg print:hidden">
+          <h3 className="font-bold text-blue-800 mb-4 flex items-center gap-2 text-lg">
+            <Plane size={20} /> 機票費用
+          </h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-bold text-blue-700 mb-2">每人機票價格 (TWD)</label>
+              <input
+                type="number"
+                value={flightCost}
+                onChange={(e) => setFlightCost(parseInt(e.target.value) || 0)}
+                className="w-full p-3 bg-white border-2 border-blue-300 rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+                placeholder="15000"
+              />
+            </div>
+            <div className="flex items-end">
+              <div className="bg-blue-100 p-4 rounded-xl border-2 border-blue-300 w-full shadow-sm">
+                <div className="text-xs text-blue-600 font-bold mb-1">總機票費用</div>
+                <div className="text-2xl font-black text-blue-800 font-mono">¥{totalFlightCost.toLocaleString()}</div>
+                <div className="text-xs text-blue-600 mt-1">{INITIAL_PEOPLE.length} 人 × ¥{flightCost.toLocaleString()}</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Accommodation Cost Input */}
-      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 mb-6 border-3 border-purple-300 shadow-lg print:hidden">
-        <h3 className="font-bold text-purple-800 mb-4 flex items-center gap-2 text-lg">
-          <Home size={20} /> 住宿費用
-        </h3>
-        <div className="grid grid-cols-3 gap-4">
-          <div>
-            <label className="block text-sm font-bold text-purple-700 mb-2">每晚價格 (TWD)</label>
-            <input
-              type="number"
-              value={accommodationCostPerNight}
-              onChange={(e) => setAccommodationCostPerNight(parseInt(e.target.value) || 0)}
-              className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
-              placeholder="3000"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-bold text-purple-700 mb-2">住宿天數</label>
-            <input
-              type="number"
-              value={numberOfNights}
-              onChange={(e) => setNumberOfNights(parseInt(e.target.value) || 0)}
-              className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
-              placeholder="6"
-            />
-          </div>
-          <div className="flex items-end">
-            <div className="bg-purple-100 p-4 rounded-xl border-2 border-purple-300 w-full shadow-sm">
-              <div className="text-xs text-purple-600 font-bold mb-1">總住宿費用</div>
-              <div className="text-2xl font-black text-purple-800 font-mono">¥{totalAccommodationCost.toLocaleString()}</div>
-              <div className="text-xs text-purple-600 mt-1">{numberOfNights} 晚 × ¥{accommodationCostPerNight.toLocaleString()}</div>
+        {/* Accommodation Cost Input */}
+        <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 mb-6 border-3 border-purple-300 shadow-lg print:hidden">
+          <h3 className="font-bold text-purple-800 mb-4 flex items-center gap-2 text-lg">
+            <Home size={20} /> 住宿費用
+          </h3>
+          <div className="grid grid-cols-3 gap-4">
+            <div>
+              <label className="block text-sm font-bold text-purple-700 mb-2">每晚價格 (TWD)</label>
+              <input
+                type="number"
+                value={accommodationCostPerNight}
+                onChange={(e) => setAccommodationCostPerNight(parseInt(e.target.value) || 0)}
+                className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+                placeholder="3000"
+              />
             </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Grand Total Summary */}
-      <div className="bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 rounded-3xl p-8 text-white shadow-2xl mb-6 relative overflow-hidden">
-        <div className="absolute right-0 top-0 opacity-20"><DollarSign size={150} /></div>
-        <div className="absolute -left-10 -bottom-10 opacity-10"><Wallet size={200} /></div>
-        <div className="relative z-10">
-          <p className="text-yellow-100 text-sm font-bold tracking-wider mb-2">旅行總花費</p>
-          <div className="text-5xl font-black font-mono mb-4">¥{grandTotal.toLocaleString()}</div>
-
-          <div className="grid grid-cols-2 gap-4 mt-6">
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/30">
-              <div className="text-yellow-100 text-xs font-bold mb-1">人均費用</div>
-              <div className="text-3xl font-black">¥{Math.round(perPersonCost).toLocaleString()}</div>
-              <div className="text-yellow-100 text-xs mt-1">每人平均</div>
+            <div>
+              <label className="block text-sm font-bold text-purple-700 mb-2">住宿天數</label>
+              <input
+                type="number"
+                value={numberOfNights}
+                onChange={(e) => setNumberOfNights(parseInt(e.target.value) || 0)}
+                className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+                placeholder="6"
+              />
             </div>
-            <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/30">
-              <div className="text-yellow-100 text-xs font-bold mb-1">旅行人數</div>
-              <div className="text-3xl font-black">{INITIAL_PEOPLE.length} 人</div>
-              <div className="text-yellow-100 text-xs mt-1">{INITIAL_PEOPLE.join(', ')}</div>
-            </div>
-          </div>
-
-          {/* Breakdown */}
-          <div className="mt-6 space-y-2 bg-white/10 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/20">
-            <div className="text-yellow-100 text-sm font-bold mb-3 border-b border-white/30 pb-2">費用明細</div>
-            <div className="flex justify-between text-sm">
-              <span className="text-yellow-100">機票費用</span>
-              <span className="font-mono font-bold">¥{totalFlightCost.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-yellow-100">住宿費用</span>
-              <span className="font-mono font-bold">¥{totalAccommodationCost.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-sm">
-              <span className="text-yellow-100">其他支出</span>
-              <span className="font-mono font-bold">¥{totalSpent.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-base font-bold border-t-2 border-white/30 pt-2 mt-2">
-              <span>總計</span>
-              <span className="font-mono">¥{grandTotal.toLocaleString()}</span>
+            <div className="flex items-end">
+              <div className="bg-purple-100 p-4 rounded-xl border-2 border-purple-300 w-full shadow-sm">
+                <div className="text-xs text-purple-600 font-bold mb-1">總住宿費用</div>
+                <div className="text-2xl font-black text-purple-800 font-mono">¥{totalAccommodationCost.toLocaleString()}</div>
+                <div className="text-xs text-purple-600 mt-1">{numberOfNights} 晚 × ¥{accommodationCostPerNight.toLocaleString()}</div>
+              </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/* Public Fund Overview Card */}
-      <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl p-6 text-white shadow-xl mb-6 relative overflow-hidden border-4 border-green-300">
-        <div className="absolute right-0 top-0 opacity-10"><Wallet size={120} /></div>
-        <div className="absolute -right-8 -bottom-8 opacity-5"><Camera size={180} /></div>
-        <div className="relative z-10">
+        {/* Grand Total Summary */}
+        <div className="bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 rounded-3xl p-8 text-white shadow-2xl mb-6 relative overflow-hidden">
+          <div className="absolute right-0 top-0 opacity-20"><DollarSign size={150} /></div>
+          <div className="absolute -left-10 -bottom-10 opacity-10"><Wallet size={200} /></div>
+          <div className="relative z-10">
+            <p className="text-yellow-100 text-sm font-bold tracking-wider mb-2">旅行總花費</p>
+            <div className="text-5xl font-black font-mono mb-4">¥{grandTotal.toLocaleString()}</div>
+
+            <div className="grid grid-cols-2 gap-4 mt-6">
+              <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/30">
+                <div className="text-yellow-100 text-xs font-bold mb-1">人均費用</div>
+                <div className="text-3xl font-black">¥{Math.round(perPersonCost).toLocaleString()}</div>
+                <div className="text-yellow-100 text-xs mt-1">每人平均</div>
+              </div>
+              <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/30">
+                <div className="text-yellow-100 text-xs font-bold mb-1">旅行人數</div>
+                <div className="text-3xl font-black">{INITIAL_PEOPLE.length} 人</div>
+                <div className="text-yellow-100 text-xs mt-1">{INITIAL_PEOPLE.join(', ')}</div>
+              </div>
+            </div>
+
+            {/* Breakdown */}
+            <div className="mt-6 space-y-2 bg-white/10 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/20">
+              <div className="text-yellow-100 text-sm font-bold mb-3 border-b border-white/30 pb-2">費用明細</div>
+              <div className="flex justify-between text-sm">
+                <span className="text-yellow-100">機票費用</span>
+                <span className="font-mono font-bold">¥{totalFlightCost.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-yellow-100">住宿費用</span>
+                <span className="font-mono font-bold">¥{totalAccommodationCost.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span className="text-yellow-100">其他支出</span>
+                <span className="font-mono font-bold">¥{totalSpent.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-base font-bold border-t-2 border-white/30 pt-2 mt-2">
+                <span>總計</span>
+                <span className="font-mono">¥{grandTotal.toLocaleString()}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Public Fund Overview Card */}
+        <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl p-6 text-white shadow-xl mb-6 relative overflow-hidden border-4 border-green-300">
+          <div className="absolute right-0 top-0 opacity-10"><Wallet size={120} /></div>
+          <div className="absolute -right-8 -bottom-8 opacity-5"><Camera size={180} /></div>
+          <div className="relative z-10">
            <p className="text-green-100 text-sm font-bold tracking-wider mb-1">公積金餘額</p>
            <div className="text-4xl font-bold font-mono mb-1">¥{remainingFund.toLocaleString()}</div>
            <div className="flex items-center gap-2 text-green-100 text-sm mb-4">
@@ -978,7 +975,7 @@ export default function App() {
       <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 font-['Noto_Sans_TC'] text-stone-900">
 
         {/* Header */}
-        <header className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white shadow-2xl sticky top-0 z-50 border-b-4 border-yellow-400 print:relative">
+        <header className="jh-header text-white shadow-2xl sticky top-0 z-50 border-b-4 border-jh-gold print:relative">
           <div className="max-w-3xl mx-auto px-6 py-6 flex justify-between items-center relative overflow-hidden">
              <div className="absolute right-0 top-0 opacity-10">
                <Camera size={150} />
@@ -1005,22 +1002,22 @@ export default function App() {
         </main>
 
         {/* Bottom Navigation */}
-        <nav className="print:hidden fixed bottom-0 w-full bg-gradient-to-r from-purple-100 via-pink-100 to-blue-100 backdrop-blur-md border-t-4 border-purple-400 px-6 py-4 pb-safe z-50 shadow-2xl">
+        <nav className="print:hidden fixed bottom-0 w-full jh-day-selector px-6 py-4 pb-safe z-50 shadow-2xl">
           <div className="max-w-md mx-auto flex justify-around items-center">
             <button
               onClick={() => setActiveTab('itinerary')}
-              className={`flex flex-col items-center gap-2 p-3 w-28 transition-all rounded-2xl ${activeTab === 'itinerary' ? 'text-purple-700 -translate-y-2 bg-white shadow-lg' : 'text-purple-400'}`}
+              className={`flex flex-col items-center gap-2 p-3 w-28 transition-all rounded-2xl ${activeTab === 'itinerary' ? 'text-jh-accent -translate-y-2 bg-white shadow-lg' : 'text-jh-muted'}`}
             >
-              <div className={`${activeTab === 'itinerary' ? 'bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-2xl shadow-xl' : ''}`}>
+              <div className={`${activeTab === 'itinerary' ? 'jh-active p-3 rounded-2xl shadow-xl' : ''}`}>
                 <MapPin size={26} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} className={activeTab === 'itinerary' ? 'text-white' : ''} />
               </div>
               <span className="text-xs font-bold">行程</span>
             </button>
             <button
               onClick={() => setActiveTab('expenses')}
-              className={`flex flex-col items-center gap-2 p-3 w-28 transition-all rounded-2xl ${activeTab === 'expenses' ? 'text-green-700 -translate-y-2 bg-white shadow-lg' : 'text-green-400'}`}
+              className={`flex flex-col items-center gap-2 p-3 w-28 transition-all rounded-2xl ${activeTab === 'expenses' ? 'text-jh-accent -translate-y-2 bg-white shadow-lg' : 'text-jh-muted'}`}
             >
-              <div className={`${activeTab === 'expenses' ? 'bg-gradient-to-br from-green-600 to-emerald-600 p-3 rounded-2xl shadow-xl' : ''}`}>
+              <div className={`${activeTab === 'expenses' ? 'jh-active p-3 rounded-2xl shadow-xl' : ''}`}>
                 <Wallet size={26} strokeWidth={activeTab === 'expenses' ? 2.5 : 2} className={activeTab === 'expenses' ? 'text-white' : ''} />
               </div>
               <span className="text-xs font-bold">費用</span>
