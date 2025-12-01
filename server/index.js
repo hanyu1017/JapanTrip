@@ -14,8 +14,8 @@ app.use(cors({
   origin: process.env.CLIENT_URL || '*',
   credentials: true
 }));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json({ limit: '10mb' })); // Increase limit for image uploads
+app.use(bodyParser.urlencoded({ extended: true, limit: '10mb' }));
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
@@ -51,7 +51,8 @@ app.get('/api/itinerary', async (req, res) => {
           from: item.from_location,
           to: item.to_location,
           method: item.method,
-          duration: item.duration
+          duration: item.duration,
+          imageUrl: item.image_url
         }))
       };
     }));
@@ -97,7 +98,8 @@ app.get('/api/itinerary/:day', async (req, res) => {
         from: item.from_location,
         to: item.to_location,
         method: item.method,
-        duration: item.duration
+        duration: item.duration,
+        imageUrl: item.image_url
       }))
     });
   } catch (err) {
@@ -109,7 +111,7 @@ app.get('/api/itinerary/:day', async (req, res) => {
 // Add or update itinerary item
 app.post('/api/itinerary/item', async (req, res) => {
   try {
-    const { id, day, time, type, title, location, desc, detail, from, to, method, duration } = req.body;
+    const { id, day, time, type, title, location, desc, detail, from, to, method, duration, imageUrl } = req.body;
 
     // Get day_id
     const dayResult = await pool.query(
@@ -128,9 +130,9 @@ app.post('/api/itinerary/item', async (req, res) => {
       await pool.query(
         `UPDATE itinerary_items
          SET time = $1, type = $2, title = $3, location = $4, description = $5,
-             detail = $6, from_location = $7, to_location = $8, method = $9, duration = $10
-         WHERE id = $11`,
-        [time, type, title, location, desc, detail, from, to, method, duration, id]
+             detail = $6, from_location = $7, to_location = $8, method = $9, duration = $10, image_url = $11
+         WHERE id = $12`,
+        [time, type, title, location, desc, detail, from, to, method, duration, imageUrl, id]
       );
       res.json({ message: 'Item updated successfully', id });
     } else {
@@ -138,9 +140,9 @@ app.post('/api/itinerary/item', async (req, res) => {
       const newId = `item-${Date.now()}`;
       await pool.query(
         `INSERT INTO itinerary_items
-         (id, day_id, time, type, title, location, description, detail, from_location, to_location, method, duration)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)`,
-        [newId, dayId, time, type, title, location, desc, detail, from, to, method, duration]
+         (id, day_id, time, type, title, location, description, detail, from_location, to_location, method, duration, image_url)
+         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13)`,
+        [newId, dayId, time, type, title, location, desc, detail, from, to, method, duration, imageUrl]
       );
       res.json({ message: 'Item created successfully', id: newId });
     }
