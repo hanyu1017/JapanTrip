@@ -4,8 +4,11 @@ import {
   Plane, Train, Bus, MapPin, Utensils, Bed,
   ChevronRight, Navigation, Plus, X, Edit,
   Wallet, Users, Calendar, Camera, Coffee, ArrowRight, ArrowDown,
-  Clock, Loader, AlertCircle, RefreshCw, Save, Trash2, TrendingUp, TrendingDown
+  Clock, Loader, AlertCircle, RefreshCw, Save, Trash2, TrendingUp, TrendingDown,
+  Image as ImageIcon
 } from 'lucide-react';
+import { ImageUpload } from './components/ImageUpload';
+import { RouteVisualization } from './components/RouteVisualization';
 
 // API base URL
 const API_URL = import.meta.env.VITE_API_URL || '/api';
@@ -76,7 +79,7 @@ const INITIAL_PEOPLE = ["佑瑋", "小白", "旅伴C", "旅伴D", "旅伴E"];
 const LoadingSpinner = () => (
   <div className="flex items-center justify-center min-h-screen">
     <div className="text-center">
-      <Loader className="animate-spin text-[#5e3d55] mx-auto mb-4" size={48} />
+      <Loader className="animate-spin text-[#8b6f47] mx-auto mb-4" size={48} />
       <p className="text-stone-600 font-medium">載入中...</p>
     </div>
   </div>
@@ -108,17 +111,19 @@ const DetailModal = ({ isOpen, onClose, item, onEdit }) => {
   const origin = item.prevLocation ? `origin=${encodeURIComponent(item.prevLocation)}&` : '';
   const destination = `destination=${encodeURIComponent(item.location || item.title)}`;
   const mapUrl = `https://www.google.com/maps/dir/?api=1&${origin}${destination}&travelmode=transit`;
-  const imageUrl = getFixedImage(item.id);
+
+  // Use custom image if available, otherwise fallback to fixed images
+  const imageUrl = item.imageUrl || getFixedImage(item.id);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-stone-950/60">
-      <div className="bg-[#f7f5f0] rounded-xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 relative border border-stone-300">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/60">
+      <div className="bg-gradient-to-b from-[#faf8f3] to-[#f5f1e8] rounded-2xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 relative border-2 border-[#c9a884]">
         <div className="relative h-64 overflow-hidden group">
           <div className="absolute inset-0 bg-stone-200 animate-pulse" />
           <img
             src={imageUrl}
             alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             loading="lazy"
           />
           <button
@@ -127,37 +132,42 @@ const DetailModal = ({ isOpen, onClose, item, onEdit }) => {
           >
             <X size={20} />
           </button>
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-5 pt-20">
+
+          {/* Japanese-style gradient overlays */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-[#c44569]/20 via-transparent to-[#8b6f47]/20"></div>
+
+          <div className="absolute bottom-0 left-0 right-0 p-5">
             <div className="flex items-center gap-2 mb-1">
-               <span className="bg-[#8e405a] text-white text-[10px] px-2 py-0.5 rounded shadow-sm font-serif tracking-wider">
+               <span className="bg-gradient-to-r from-[#8b6f47] to-[#6d5436] text-white text-[10px] px-2 py-0.5 rounded shadow-sm font-serif tracking-wider">
                  {item.time}
                </span>
-               {item.type === 'meal' && <span className="bg-rose-500 text-white text-[10px] px-2 py-0.5 rounded shadow-sm">美食</span>}
+               {item.type === 'meal' && <span className="bg-gradient-to-r from-[#f6b93b] to-[#f39c12] text-white text-[10px] px-2 py-0.5 rounded shadow-sm font-bold">美食</span>}
             </div>
-            <h3 className="text-2xl font-bold text-white tracking-wide shadow-sm font-serif leading-tight">{item.title}</h3>
+            <h3 className="text-2xl font-black text-white tracking-wide shadow-sm font-serif leading-tight">{item.title}</h3>
             {item.location && (
               <span className="text-stone-200 text-sm flex items-center gap-1.5 mt-2 font-medium">
-                <MapPin size={14} className="text-rose-300" /> {item.location}
+                <MapPin size={14} className="text-[#f6b93b]" /> {item.location}
               </span>
             )}
           </div>
         </div>
 
         <div className="p-6 space-y-5">
-          <p className="text-stone-700 leading-relaxed text-[15px] font-medium font-sans border-l-2 border-[#8e405a] pl-3">
+          <p className="text-[#5d4037] leading-relaxed text-[15px] font-medium font-sans border-l-4 border-[#c44569] pl-4 bg-white/50 py-2 rounded-r-lg">
             {item.desc || "暫無詳細介紹。"}
           </p>
 
           {item.type === 'transport' && item.detail && (
-            <div className="bg-white p-5 rounded-lg border border-stone-200 shadow-sm relative overflow-hidden">
-               <div className="flex items-center gap-2 text-[#5e3d55] font-bold mb-3 pb-2 border-b border-stone-100">
+            <div className="bg-white/90 backdrop-blur-sm p-5 rounded-xl border-2 border-[#c9a884] shadow-lg relative overflow-hidden">
+               <div className="flex items-center gap-2 text-[#8b6f47] font-bold mb-3 pb-2 border-b-2 border-[#c9a884]">
                   <Train size={18} /> 交通詳情
                </div>
-               <div className="text-sm text-stone-600 whitespace-pre-line leading-relaxed font-mono">
+               <div className="text-sm text-[#5d4037] whitespace-pre-line leading-relaxed font-mono">
                  {item.detail}
                </div>
                {item.duration && (
-                 <div className="mt-3 flex items-center gap-2 text-xs font-bold text-stone-400 bg-stone-50 px-3 py-1.5 rounded-full w-fit">
+                 <div className="mt-3 flex items-center gap-2 text-xs font-bold text-[#8b6f47] bg-[#f5f1e8] px-3 py-1.5 rounded-full w-fit border border-[#c9a884]">
                     <Clock size={12} /> {item.duration}
                  </div>
                )}
@@ -165,25 +175,25 @@ const DetailModal = ({ isOpen, onClose, item, onEdit }) => {
           )}
 
           {item.type !== 'transport' && item.detail && (
-             <div className="bg-[#fcfaf2] p-4 rounded-lg border border-[#eaddcf] text-sm text-[#5d4037] flex items-start gap-3">
-                <div className="mt-0.5"><Users size={16} className="text-[#8d6e63]" /></div>
+             <div className="bg-white/90 backdrop-blur-sm p-4 rounded-xl border-2 border-[#c9a884] text-sm text-[#5d4037] flex items-start gap-3 shadow-md">
+                <div className="mt-0.5"><Users size={16} className="text-[#8b6f47]" /></div>
                 <span className="leading-relaxed">{item.detail}</span>
              </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3 mt-6 pt-4 border-t border-stone-200/60">
+          <div className="grid grid-cols-2 gap-3 mt-6 pt-4 border-t-2 border-[#c9a884]/30">
             <a
               href={mapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-[#5e3d55] text-white py-3.5 rounded-lg font-bold shadow-lg shadow-[#5e3d55]/20 hover:bg-[#4a2f43] transition-all active:scale-[0.98] font-serif tracking-wide"
+              className="flex items-center justify-center gap-2 bg-gradient-to-r from-[#8b6f47] to-[#6d5436] text-white py-3.5 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all active:scale-[0.98] font-serif tracking-wide"
             >
               <Navigation size={18} />
               導航
             </a>
             <button
               onClick={() => { onClose(); onEdit(item); }}
-              className="flex items-center justify-center gap-2 bg-white text-stone-600 border border-stone-200 py-3.5 rounded-lg font-bold hover:bg-stone-50 transition-all active:scale-[0.98]"
+              className="flex items-center justify-center gap-2 bg-white/90 backdrop-blur-sm text-[#8b6f47] border-2 border-[#c9a884] py-3.5 rounded-xl font-bold hover:bg-[#f5f1e8] transition-all active:scale-[0.98] shadow-md"
             >
               <Edit size={18} />
               編輯
@@ -206,40 +216,51 @@ const EditModal = ({ isOpen, onClose, item, onSave, onDelete, saving }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-sm bg-stone-900/40">
-      <div className="bg-[#fcfaf2] w-full sm:max-w-md sm:rounded-xl rounded-t-xl p-6 shadow-2xl animate-in slide-in-from-bottom duration-300 border-t-4 border-[#5e3d55]">
-        <h3 className="text-lg font-bold mb-5 text-[#5e3d55] flex items-center gap-2 font-serif">
-          {item.id ? <Edit size={20} /> : <Plus size={20} />}
-          {item.id ? '編輯行程' : '新增行程'}
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-md bg-black/60">
+      <div className="bg-gradient-to-b from-[#faf8f3] to-[#f5f1e8] w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl p-6 shadow-2xl animate-in slide-in-from-bottom duration-300 border-t-4 border-[#c44569] max-h-[90vh] overflow-y-auto">
+        <h3 className="text-xl font-black mb-6 text-[#5d4037] flex items-center gap-2 font-serif border-b-2 border-[#c9a884] pb-3">
+          {item.id ? <Edit size={24} /> : <Plus size={24} />}
+          {item.id ? '行程を編集' : '行程を追加'}
         </h3>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
+          {/* Image Upload Section */}
           <div>
-            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">標題</label>
+            <label className="block text-sm font-bold text-[#8b6f47] uppercase tracking-wider mb-2 flex items-center gap-2">
+              <ImageIcon size={16} /> 画像
+            </label>
+            <ImageUpload
+              currentImage={formData.imageUrl}
+              onImageChange={(imageData) => setFormData({...formData, imageUrl: imageData})}
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-bold text-[#8b6f47] uppercase tracking-wider mb-2">標題</label>
             <input
               type="text"
               value={formData.title || ''}
               onChange={e => setFormData({...formData, title: e.target.value})}
-              className="w-full p-3 bg-white border border-stone-200 rounded-lg focus:ring-2 focus:ring-[#5e3d55] outline-none font-serif"
+              className="w-full p-3 bg-white/90 backdrop-blur-sm border-2 border-[#c9a884] rounded-xl focus:ring-2 focus:ring-[#c44569] outline-none font-serif shadow-sm"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">時間</label>
+              <label className="block text-sm font-bold text-[#8b6f47] uppercase tracking-wider mb-2">時間</label>
               <input
                 type="time"
                 value={formData.time || '12:00'}
                 onChange={e => setFormData({...formData, time: e.target.value})}
-                className="w-full p-3 bg-white border border-stone-200 rounded-lg focus:ring-2 focus:ring-[#5e3d55] outline-none"
+                className="w-full p-3 bg-white/90 backdrop-blur-sm border-2 border-[#c9a884] rounded-xl focus:ring-2 focus:ring-[#c44569] outline-none shadow-sm"
               />
             </div>
             <div>
-              <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">類型</label>
+              <label className="block text-sm font-bold text-[#8b6f47] uppercase tracking-wider mb-2">類型</label>
               <select
                 value={formData.type || 'spot'}
                 onChange={e => setFormData({...formData, type: e.target.value})}
-                className="w-full p-3 bg-white border border-stone-200 rounded-lg focus:ring-2 focus:ring-[#5e3d55] outline-none"
+                className="w-full p-3 bg-white/90 backdrop-blur-sm border-2 border-[#c9a884] rounded-xl focus:ring-2 focus:ring-[#c44569] outline-none shadow-sm"
               >
                 <option value="spot">📸 景點</option>
                 <option value="transport">🚅 交通</option>
@@ -251,42 +272,42 @@ const EditModal = ({ isOpen, onClose, item, onSave, onDelete, saving }) => {
           </div>
 
           <div>
-            <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">地點</label>
+            <label className="block text-sm font-bold text-[#8b6f47] uppercase tracking-wider mb-2">地點</label>
             <input
               type="text"
               value={formData.location || ''}
               onChange={e => setFormData({...formData, location: e.target.value})}
-              className="w-full p-3 bg-white border border-stone-200 rounded-lg focus:ring-2 focus:ring-[#5e3d55] outline-none"
+              className="w-full p-3 bg-white/90 backdrop-blur-sm border-2 border-[#c9a884] rounded-xl focus:ring-2 focus:ring-[#c44569] outline-none shadow-sm"
               placeholder="地點名稱"
             />
           </div>
 
           <div>
-             <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">詳細說明</label>
+             <label className="block text-sm font-bold text-[#8b6f47] uppercase tracking-wider mb-2">詳細說明</label>
              <textarea
                 value={formData.detail || ''}
                 onChange={e => setFormData({...formData, detail: e.target.value})}
-                className="w-full p-3 bg-white border border-stone-200 rounded-lg h-24 text-sm focus:ring-2 focus:ring-[#5e3d55] outline-none font-mono leading-relaxed"
+                className="w-full p-3 bg-white/90 backdrop-blur-sm border-2 border-[#c9a884] rounded-xl h-24 text-sm focus:ring-2 focus:ring-[#c44569] outline-none font-mono leading-relaxed shadow-sm"
                 placeholder="輸入詳細交通方式、轉乘點或備註..."
               />
           </div>
 
           <div>
-             <label className="block text-xs font-bold text-stone-500 uppercase tracking-wide mb-1.5">簡述</label>
+             <label className="block text-sm font-bold text-[#8b6f47] uppercase tracking-wider mb-2">簡述</label>
              <textarea
                 value={formData.desc || ''}
                 onChange={e => setFormData({...formData, desc: e.target.value})}
-                className="w-full p-3 bg-white border border-stone-200 rounded-lg h-16 text-sm focus:ring-2 focus:ring-[#5e3d55] outline-none"
+                className="w-full p-3 bg-white/90 backdrop-blur-sm border-2 border-[#c9a884] rounded-xl h-16 text-sm focus:ring-2 focus:ring-[#c44569] outline-none shadow-sm"
                 placeholder="簡單描述..."
               />
           </div>
 
-          <div className="flex gap-3 mt-8">
+          <div className="flex gap-3 mt-8 pt-6 border-t-2 border-[#c9a884]/30">
             {item.id && (
               <button
                 onClick={() => onDelete(item.id)}
                 disabled={saving}
-                className="px-4 py-3 bg-red-50 text-red-600 rounded-lg font-bold hover:bg-red-100 transition-colors disabled:opacity-50 flex items-center gap-2"
+                className="px-4 py-3 bg-red-50 text-red-600 rounded-xl font-bold hover:bg-red-100 transition-colors disabled:opacity-50 flex items-center gap-2 border-2 border-red-200 shadow-sm"
               >
                 <Trash2 size={16} /> 刪除
               </button>
@@ -294,7 +315,7 @@ const EditModal = ({ isOpen, onClose, item, onSave, onDelete, saving }) => {
             <button
               onClick={() => onSave(formData)}
               disabled={saving}
-              className="flex-1 bg-[#5e3d55] text-white py-3 rounded-lg font-bold hover:bg-[#4a2f43] shadow-md transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 bg-gradient-to-r from-[#8b6f47] to-[#6d5436] text-white py-3 rounded-xl font-bold hover:shadow-xl shadow-lg transition-all active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {saving ? <Loader className="animate-spin" size={16} /> : <Save size={16} />}
               {saving ? '儲存中...' : '儲存'}
@@ -302,7 +323,7 @@ const EditModal = ({ isOpen, onClose, item, onSave, onDelete, saving }) => {
             <button
               onClick={onClose}
               disabled={saving}
-              className="px-6 py-3 bg-white text-stone-600 border border-stone-200 rounded-lg font-bold hover:bg-stone-50 transition-colors disabled:opacity-50"
+              className="px-6 py-3 bg-white/90 backdrop-blur-sm text-[#8b6f47] border-2 border-[#c9a884] rounded-xl font-bold hover:bg-[#f5f1e8] transition-colors disabled:opacity-50 shadow-sm"
             >
               取消
             </button>
@@ -391,7 +412,8 @@ export default function App() {
         from: updatedItem.from,
         to: updatedItem.to,
         method: updatedItem.method,
-        duration: updatedItem.duration
+        duration: updatedItem.duration,
+        imageUrl: updatedItem.imageUrl  // Include image URL
       };
 
       await axios.post(`${API_URL}/itinerary/item`, itemData);
@@ -471,7 +493,8 @@ export default function App() {
       title: "",
       location: "",
       desc: "",
-      detail: ""
+      detail: "",
+      imageUrl: ""
     });
     setIsEditModalOpen(true);
   };
@@ -502,19 +525,19 @@ export default function App() {
     return (
       <div className="pb-28">
         {/* Day Selector */}
-        <div className="sticky top-0 z-40 bg-[#f7f5f0]/90 backdrop-blur-md border-b border-[#e6e2d8] shadow-sm overflow-x-auto no-scrollbar">
+        <div className="sticky top-0 z-40 bg-gradient-to-r from-[#faf8f3] to-[#f5f1e8] backdrop-blur-md border-b-2 border-[#c9a884] shadow-lg overflow-x-auto no-scrollbar">
           <div className="flex p-3 gap-2 min-w-max">
             {days.map(d => (
               <button
                 key={d.day}
                 onClick={() => setCurrentDay(d.day)}
-                className={`flex flex-col items-center px-4 py-2 rounded-lg transition-all duration-300 border ${
+                className={`flex flex-col items-center px-4 py-2 rounded-xl transition-all duration-300 border-2 ${
                   currentDay === d.day
-                  ? 'bg-[#5e3d55] text-white shadow-md border-transparent scale-105'
-                  : 'bg-white text-stone-500 hover:bg-stone-50 border-stone-200'
+                  ? 'bg-gradient-to-br from-[#8b6f47] to-[#6d5436] text-white shadow-lg border-transparent scale-105'
+                  : 'bg-white/90 backdrop-blur-sm text-stone-500 hover:bg-white border-[#c9a884]'
                 }`}
               >
-                <span className={`text-[10px] uppercase tracking-wider font-bold mb-0.5 ${currentDay === d.day ? 'text-indigo-100' : 'text-stone-400'}`}>
+                <span className={`text-[10px] uppercase tracking-wider font-bold mb-0.5 ${currentDay === d.day ? 'text-[#f6b93b]' : 'text-stone-400'}`}>
                   Day {d.day}
                 </span>
                 <span className="text-sm font-bold whitespace-nowrap font-serif">{d.date.split(' ')[0]}</span>
@@ -526,24 +549,28 @@ export default function App() {
         <div className="p-4 max-w-2xl mx-auto">
           <div className="flex justify-between items-end mb-6 mt-2">
             <div>
-              <h2 className="text-2xl font-black text-[#2c1a2e] flex items-center gap-2 font-serif">
+              <h2 className="text-3xl font-black text-[#5d4037] flex items-center gap-2 font-serif">
                 Day {currentDay}
               </h2>
-               <span className="text-sm font-medium text-stone-500 block mt-1 tracking-wide">
+               <span className="text-sm font-medium text-[#8b6f47] block mt-1 tracking-wide">
                 {currentDayData.title}
               </span>
             </div>
             <button
               onClick={openAddModal}
-              className="flex items-center gap-1.5 bg-[#f8e1e7] text-[#8e405a] px-3 py-1.5 rounded-full text-sm font-bold hover:bg-[#f0d0d8] transition-colors shadow-sm"
+              className="flex items-center gap-1.5 bg-gradient-to-r from-[#c44569] to-[#a83551] text-white px-4 py-2 rounded-full text-sm font-bold hover:shadow-lg transition-all shadow-md active:scale-95"
             >
               <Plus size={16} /> 新增
             </button>
           </div>
 
-          <div className="relative space-y-6">
-            {/* Vertical Line */}
-            <div className="absolute left-[19px] top-4 bottom-4 w-0.5 bg-stone-300/50 -z-10"></div>
+          {/* Route Visualization Component */}
+          <RouteVisualization items={currentDayData.items} />
+
+          {/* Timeline */}
+          <div className="relative space-y-6 mt-8">
+            {/* Vertical Gradient Line */}
+            <div className="absolute left-[23px] top-4 bottom-4 w-1 bg-gradient-to-b from-[#c44569] via-[#c9a884] to-[#8b6f47] rounded-full shadow-md -z-10"></div>
 
             {currentDayData.items.map((item, idx) => {
               const prevItem = idx > 0 ? currentDayData.items[idx-1] : null;
@@ -551,19 +578,23 @@ export default function App() {
               const itemWithPrev = { ...item, prevLocation };
 
               const isTransport = item.type === 'transport';
-              const fixedImage = getFixedImage(item.id);
+
+              // Use custom image if available, otherwise fallback to fixed images
+              const imageUrl = item.imageUrl || getFixedImage(item.id);
 
               return (
-                <div key={item.id} className="relative pl-12 group">
-                  {/* Timeline Dot & Time */}
+                <div key={item.id} className="relative pl-16 group">
+                  {/* Enhanced Timeline Dot & Time */}
                   <div className="absolute left-0 top-0 flex flex-col items-center z-10">
-                     <div className={`w-10 h-10 rounded-full border-4 border-[#f7f5f0] shadow-sm flex items-center justify-center text-xs font-bold font-mono
-                        ${isTransport ? 'bg-stone-600 text-white' : item.type === 'meal' ? 'bg-rose-500 text-white' : 'bg-[#5e3d55] text-white'}
+                     <div className={`relative w-12 h-12 rounded-full border-4 border-white shadow-xl flex items-center justify-center font-bold
+                        ${isTransport ? 'bg-gradient-to-br from-[#6d5436] to-[#8b6f47]' :
+                          item.type === 'meal' ? 'bg-gradient-to-br from-[#f6b93b] to-[#f39c12]' :
+                          'bg-gradient-to-br from-[#c44569] to-[#a83551]'} text-white shadow-lg
                      `}>
-                       {item.time.split(':')[0]}
-                     </div>
-                     <div className="text-[10px] font-mono text-stone-400 font-bold mt-1 bg-[#f7f5f0] px-1">
-                        :{item.time.split(':')[1]}
+                       <div className="text-center">
+                         <div className="text-xs leading-none font-black">{item.time.split(':')[0]}</div>
+                         <div className="text-[8px] leading-none mt-0.5 opacity-80">:{item.time.split(':')[1]}</div>
+                       </div>
                      </div>
                   </div>
 
@@ -571,21 +602,21 @@ export default function App() {
                   {isTransport ? (
                     <div
                       onClick={() => setDetailModalItem(itemWithPrev)}
-                      className="bg-white rounded-lg p-4 border border-stone-200 shadow-sm hover:shadow-md transition-all cursor-pointer relative overflow-hidden"
+                      className="bg-white/90 backdrop-blur-sm rounded-xl p-4 border-2 border-[#c9a884] shadow-md hover:shadow-xl transition-all cursor-pointer relative overflow-hidden"
                     >
                        <div className="flex justify-between items-start mb-2">
-                          <div className="flex items-center gap-2 font-bold text-stone-800">
-                            <Train size={16} className="text-stone-500" />
+                          <div className="flex items-center gap-2 font-bold text-[#5d4037]">
+                            <Train size={16} className="text-[#8b6f47]" />
                             <span>{item.title}</span>
                           </div>
                           {item.duration && (
-                            <div className="text-xs font-bold bg-stone-100 text-stone-500 px-2 py-0.5 rounded">
+                            <div className="text-xs font-bold bg-[#f5f1e8] text-[#8b6f47] px-2 py-0.5 rounded-full border border-[#c9a884]">
                                {item.duration}
                             </div>
                           )}
                        </div>
                        {item.detail && (
-                         <div className="text-sm bg-stone-50 p-3 rounded border border-stone-100 font-mono text-stone-600 whitespace-pre-line leading-relaxed">
+                         <div className="text-sm bg-[#faf8f3] p-3 rounded-lg border border-[#c9a884] font-mono text-[#5d4037] whitespace-pre-line leading-relaxed">
                             {item.detail.length > 100 ? item.detail.substring(0, 100) + '...' : item.detail}
                          </div>
                        )}
@@ -593,25 +624,35 @@ export default function App() {
                   ) : (
                     <div
                        onClick={() => setDetailModalItem(itemWithPrev)}
-                       className="relative h-40 rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all cursor-pointer group-hover:-translate-y-1 duration-300 border border-stone-100"
+                       className="relative h-48 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all cursor-pointer group-hover:-translate-y-1 duration-300 border-4 border-white"
                     >
-                       <img src={fixedImage} alt={item.title} className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
-                       <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-4 flex flex-col justify-end">
+                       <img
+                         src={imageUrl}
+                         alt={item.title}
+                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                         loading="lazy"
+                       />
+
+                       {/* Japanese-style gradient overlays */}
+                       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent"></div>
+                       <div className="absolute inset-0 bg-gradient-to-br from-[#c44569]/20 via-transparent to-[#8b6f47]/20"></div>
+
+                       <div className="absolute inset-0 p-5 flex flex-col justify-end">
                           <div className="flex justify-between items-end">
                              <div>
                                 {item.type === 'meal' && (
-                                   <span className="inline-block px-2 py-0.5 mb-1 bg-rose-500/90 text-white text-[10px] font-bold rounded backdrop-blur-sm">Delicious</span>
+                                   <span className="inline-block px-2 py-0.5 mb-1 bg-gradient-to-r from-[#f6b93b] to-[#f39c12] text-white text-[10px] font-bold rounded backdrop-blur-sm shadow-md">美味しい</span>
                                 )}
-                                <h3 className="text-lg font-bold text-white font-serif leading-tight shadow-sm mb-0.5">
+                                <h3 className="text-xl font-black text-white font-serif leading-tight shadow-lg mb-1">
                                    {item.title}
                                 </h3>
                                 {item.location && (
-                                  <div className="flex items-center gap-1 text-[11px] text-stone-300 font-medium">
-                                     <MapPin size={10} /> {item.location}
+                                  <div className="flex items-center gap-1 text-xs text-[#f6b93b] font-bold">
+                                     <MapPin size={12} /> {item.location}
                                   </div>
                                 )}
                              </div>
-                             <ChevronRight className="text-white/60" size={20} />
+                             <ChevronRight className="text-white/80 group-hover:translate-x-1 transition-transform" size={24} />
                           </div>
                        </div>
                     </div>
@@ -622,7 +663,10 @@ export default function App() {
           </div>
 
           <div className="mt-8 text-center">
-               <button onClick={openAddModal} className="px-6 py-3 border border-dashed border-stone-300 rounded-full text-stone-400 hover:border-[#8e405a] hover:text-[#8e405a] hover:bg-[#f8e1e7]/30 transition-all font-bold text-sm flex items-center justify-center gap-2 mx-auto">
+               <button
+                 onClick={openAddModal}
+                 className="px-6 py-3 border-2 border-dashed border-[#c9a884] rounded-full text-[#8b6f47] hover:border-[#c44569] hover:text-[#c44569] hover:bg-[#faf8f3] transition-all font-bold text-sm flex items-center justify-center gap-2 mx-auto shadow-sm hover:shadow-md"
+               >
                   <Plus size={16} /> 新增行程
                </button>
           </div>
@@ -634,12 +678,12 @@ export default function App() {
   // ==================== EXPENSE VIEW ====================
   const ExpenseView = () => (
     <div className="p-5 max-w-2xl mx-auto pb-28">
-      <h2 className="text-xl font-bold mb-6 text-[#2c1a2e] flex items-center gap-2 font-serif">
-        <Wallet className="text-[#558b2f]" size={20} /> 旅費帳本
+      <h2 className="text-2xl font-black mb-6 text-[#5d4037] flex items-center gap-2 font-serif">
+        <Wallet className="text-[#558b2f]" size={24} /> 旅費帳本
       </h2>
 
       {/* Fund Overview Card */}
-      <div className="bg-gradient-to-br from-[#558b2f] to-[#33691e] rounded-2xl p-6 text-white shadow-lg mb-6 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#558b2f] to-[#33691e] rounded-2xl p-6 text-white shadow-xl mb-6 relative overflow-hidden border-2 border-white">
         <div className="absolute right-0 top-0 opacity-10"><Wallet size={120} /></div>
         <div className="absolute -right-8 -bottom-8 opacity-5"><Camera size={180} /></div>
         <div className="relative z-10">
@@ -672,8 +716,8 @@ export default function App() {
       </div>
 
       {/* Add Expense Form */}
-      <div className="bg-white p-5 rounded-xl border border-stone-200 shadow-sm mb-6">
-        <h3 className="font-bold text-stone-700 mb-3 flex items-center gap-2">
+      <div className="bg-white/90 backdrop-blur-sm p-5 rounded-xl border-2 border-[#c9a884] shadow-md mb-6">
+        <h3 className="font-bold text-[#5d4037] mb-3 flex items-center gap-2">
           <Plus size={16} /> 新增支出
         </h3>
         <div className="grid grid-cols-5 gap-3 mb-3">
@@ -681,7 +725,7 @@ export default function App() {
              <select
                value={expenseForm.payer}
                onChange={(e) => setExpenseForm({...expenseForm, payer: e.target.value})}
-               className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#558b2f]"
+               className="w-full p-2.5 bg-[#faf8f3] border-2 border-[#c9a884] rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#8b6f47]"
              >
                <option value="公積金">公積金</option>
                {INITIAL_PEOPLE.map(p => <option key={p} value={p}>{p}</option>)}
@@ -693,7 +737,7 @@ export default function App() {
                 placeholder="金額"
                 value={expenseForm.amount}
                 onChange={(e) => setExpenseForm({...expenseForm, amount: e.target.value})}
-                className="w-full p-2.5 bg-stone-50 border border-stone-200 rounded-lg text-sm outline-none font-mono focus:ring-2 focus:ring-[#558b2f]"
+                className="w-full p-2.5 bg-[#faf8f3] border-2 border-[#c9a884] rounded-lg text-sm outline-none font-mono focus:ring-2 focus:ring-[#8b6f47]"
               />
            </div>
         </div>
@@ -703,11 +747,11 @@ export default function App() {
              placeholder="項目 (例: 章魚燒)"
              value={expenseForm.desc}
              onChange={(e) => setExpenseForm({...expenseForm, desc: e.target.value})}
-             className="flex-1 p-2.5 bg-stone-50 border border-stone-200 rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#558b2f]"
+             className="flex-1 p-2.5 bg-[#faf8f3] border-2 border-[#c9a884] rounded-lg text-sm outline-none focus:ring-2 focus:ring-[#8b6f47]"
            />
            <button
              onClick={addExpense}
-             className="bg-[#558b2f] text-white px-5 rounded-lg font-bold text-sm hover:bg-[#33691e] transition-colors flex items-center gap-2"
+             className="bg-gradient-to-r from-[#558b2f] to-[#33691e] text-white px-5 rounded-lg font-bold text-sm hover:shadow-lg transition-all shadow-md flex items-center gap-2"
            >
              <Plus size={16} /> 記帳
            </button>
@@ -716,9 +760,9 @@ export default function App() {
 
       {/* Expenses List */}
       <div className="space-y-3">
-         <h3 className="font-bold text-stone-700 flex items-center justify-between">
+         <h3 className="font-bold text-[#5d4037] flex items-center justify-between">
            <span>支出記錄</span>
-           <span className="text-sm text-stone-400 font-mono">{expenses.length} 筆</span>
+           <span className="text-sm text-[#8b6f47] font-mono">{expenses.length} 筆</span>
          </h3>
          {expenses.length === 0 ? (
            <div className="text-center py-8 text-stone-400">
@@ -727,18 +771,18 @@ export default function App() {
            </div>
          ) : (
            expenses.map((e) => (
-              <div key={e.id} className="flex justify-between items-center p-3 bg-white rounded-lg border border-stone-100 shadow-sm hover:shadow-md transition-shadow">
+              <div key={e.id} className="flex justify-between items-center p-3 bg-white/90 backdrop-blur-sm rounded-xl border-2 border-[#c9a884] shadow-sm hover:shadow-md transition-all">
                  <div className="flex items-center gap-3">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${e.payer === '公積金' ? 'bg-[#dcedc8] text-[#33691e]' : 'bg-blue-100 text-blue-800'}`}>
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${e.payer === '公積金' ? 'bg-gradient-to-br from-[#dcedc8] to-[#aed581] text-[#33691e]' : 'bg-gradient-to-br from-blue-100 to-blue-200 text-blue-800'}`}>
                        {e.payer[0]}
                     </div>
                     <div>
-                       <div className="font-bold text-stone-800 text-sm">{e.desc}</div>
-                       <div className="text-[10px] text-stone-400">{e.date} • {e.payer}</div>
+                       <div className="font-bold text-[#5d4037] text-sm">{e.desc}</div>
+                       <div className="text-[10px] text-[#8b6f47]">{e.date} • {e.payer}</div>
                     </div>
                  </div>
                  <div className="flex items-center gap-3">
-                    <span className="font-mono font-bold text-stone-700">¥{e.amount.toLocaleString()}</span>
+                    <span className="font-mono font-bold text-[#5d4037]">¥{e.amount.toLocaleString()}</span>
                     <button
                       onClick={() => removeExpense(e.id)}
                       className="text-stone-300 hover:text-red-500 transition-colors"
@@ -754,22 +798,25 @@ export default function App() {
   );
 
   return (
-    <div className="min-h-screen bg-[#f7f5f0] font-['Noto_Sans_TC'] text-stone-900" style={{ backgroundImage: 'radial-gradient(#d6d3c9 1px, transparent 1px)', backgroundSize: '24px 24px' }}>
+    <div className="min-h-screen bg-gradient-to-br from-[#f5f1e8] to-[#e8dfd6] font-['Noto_Sans_TC'] text-stone-900">
 
       {/* Header */}
-      <header className="bg-gradient-to-r from-[#2c1a2e] via-[#3d2a3e] to-[#2c1a2e] text-white shadow-lg sticky top-0 z-50 border-b-4 border-[#8e405a]">
-        <div className="max-w-2xl mx-auto px-6 py-4 flex justify-between items-center relative overflow-hidden">
-           <div className="absolute right-0 top-0 opacity-5">
-             <Camera size={120} />
+      <header className="bg-gradient-to-r from-[#8b6f47] via-[#6d5436] to-[#8b6f47] text-white shadow-xl sticky top-0 z-50 border-b-4 border-[#c44569]">
+        <div className="max-w-2xl mx-auto px-6 py-5 flex justify-between items-center relative overflow-hidden">
+           <div className="absolute right-0 top-0 opacity-10">
+             <Camera size={140} />
+           </div>
+           <div className="absolute left-0 bottom-0 opacity-5">
+             <MapPin size={100} />
            </div>
            <div className="relative z-10">
-             <h1 className="text-2xl font-black tracking-tight flex items-center gap-2 font-serif">
-               ⛩️ 京阪奈 <span className="text-[#e1bee7] font-light">冬之旅</span>
+             <h1 className="text-3xl font-black tracking-tight flex items-center gap-3 font-serif">
+               ⛩️ 京阪奈 <span className="text-[#f6b93b] font-light">冬之旅</span>
              </h1>
-             <div className="text-[10px] text-[#e1bee7]/70 font-mono mt-1 tracking-[0.2em] uppercase">Kyoto Osaka Nara Trip 2025</div>
+             <div className="text-[10px] text-[#f6b93b]/80 font-mono mt-1.5 tracking-[0.25em] uppercase">Kyoto Osaka Nara Trip 2025</div>
            </div>
-           <div className="text-right text-xs text-[#e1bee7]/80">
-             <div className="font-mono font-bold">{days.length} Days</div>
+           <div className="text-right text-xs text-white/90 bg-white/10 backdrop-blur-sm px-3 py-2 rounded-xl border border-white/20">
+             <div className="font-mono font-bold text-[#f6b93b]">{days.length} Days</div>
              <div className="text-[10px]">Jan 6-12</div>
            </div>
         </div>
@@ -781,25 +828,25 @@ export default function App() {
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="fixed bottom-0 w-full bg-[#f7f5f0]/95 backdrop-blur-md border-t border-[#e6e2d8] px-6 py-2 pb-safe z-50 shadow-lg">
+      <nav className="fixed bottom-0 w-full bg-gradient-to-r from-[#faf8f3] to-[#f5f1e8] backdrop-blur-md border-t-2 border-[#c9a884] px-6 py-3 pb-safe z-50 shadow-xl">
         <div className="max-w-md mx-auto flex justify-around items-center">
           <button
             onClick={() => setActiveTab('itinerary')}
-            className={`flex flex-col items-center gap-1 p-2 w-20 transition-all ${activeTab === 'itinerary' ? 'text-[#5e3d55] -translate-y-1' : 'text-stone-400'}`}
+            className={`flex flex-col items-center gap-1.5 p-2 w-24 transition-all ${activeTab === 'itinerary' ? 'text-[#8b6f47] -translate-y-1' : 'text-stone-400'}`}
           >
-            <div className={`${activeTab === 'itinerary' ? 'bg-[#f8e1e7] p-2 rounded-xl' : ''}`}>
-              <MapPin size={24} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} />
+            <div className={`${activeTab === 'itinerary' ? 'bg-gradient-to-br from-[#c44569] to-[#a83551] p-2.5 rounded-xl shadow-lg' : ''}`}>
+              <MapPin size={24} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} className={activeTab === 'itinerary' ? 'text-white' : ''} />
             </div>
-            <span className="text-[10px] font-bold">行程</span>
+            <span className="text-xs font-bold">行程</span>
           </button>
           <button
             onClick={() => setActiveTab('expenses')}
-            className={`flex flex-col items-center gap-1 p-2 w-20 transition-all ${activeTab === 'expenses' ? 'text-[#33691e] -translate-y-1' : 'text-stone-400'}`}
+            className={`flex flex-col items-center gap-1.5 p-2 w-24 transition-all ${activeTab === 'expenses' ? 'text-[#33691e] -translate-y-1' : 'text-stone-400'}`}
           >
-            <div className={`${activeTab === 'expenses' ? 'bg-[#dcedc8] p-2 rounded-xl' : ''}`}>
-              <Wallet size={24} strokeWidth={activeTab === 'expenses' ? 2.5 : 2} />
+            <div className={`${activeTab === 'expenses' ? 'bg-gradient-to-br from-[#558b2f] to-[#33691e] p-2.5 rounded-xl shadow-lg' : ''}`}>
+              <Wallet size={24} strokeWidth={activeTab === 'expenses' ? 2.5 : 2} className={activeTab === 'expenses' ? 'text-white' : ''} />
             </div>
-            <span className="text-[10px] font-bold">費用</span>
+            <span className="text-xs font-bold">費用</span>
           </button>
         </div>
       </nav>

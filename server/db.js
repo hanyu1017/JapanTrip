@@ -38,9 +38,23 @@ const initDB = async () => {
         to_location TEXT,
         method TEXT,
         duration TEXT,
+        image_url TEXT,
         sort_order INTEGER DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
+    `);
+
+    // Add image_url column if it doesn't exist (for existing databases)
+    await client.query(`
+      DO $$
+      BEGIN
+        IF NOT EXISTS (
+          SELECT 1 FROM information_schema.columns
+          WHERE table_name='itinerary_items' AND column_name='image_url'
+        ) THEN
+          ALTER TABLE itinerary_items ADD COLUMN image_url TEXT;
+        END IF;
+      END $$;
     `);
 
     await client.query(`
