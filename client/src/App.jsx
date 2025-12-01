@@ -155,7 +155,7 @@ const DetailModal = ({ isOpen, onClose, item, onEdit }) => {
 
         <div className="p-6 space-y-5">
           <p className="text-purple-900 leading-relaxed text-[15px] font-medium font-sans border-l-4 border-pink-500 pl-4 bg-white/70 py-2 rounded-r-xl shadow-sm">
-            {item.desc || "暫無詳細介紹。"}
+            {item.desc || "暫無詳細介紹"}
           </p>
 
           {item.type === 'transport' && item.detail && (
