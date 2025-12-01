@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const path = require('path');
 require('dotenv').config();
 
 const { pool, initDB } = require('./db');
@@ -245,6 +246,21 @@ app.post('/api/settings', async (req, res) => {
   }
 });
 
+// ==================== STATIC FILES & SPA FALLBACK ====================
+
+// Serve static files from the React app (production build)
+if (process.env.NODE_ENV === 'production') {
+  const clientBuildPath = path.join(__dirname, '../client/dist');
+
+  // Serve static files
+  app.use(express.static(clientBuildPath));
+
+  // SPA fallback: all other GET requests should return index.html
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(clientBuildPath, 'index.html'));
+  });
+}
+
 // Initialize database and start server
 const startServer = async () => {
   try {
@@ -252,6 +268,9 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
       console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
+      if (process.env.NODE_ENV === 'production') {
+        console.log(`📁 Serving static files from: ${path.join(__dirname, '../client/dist')}`);
+      }
     });
   } catch (err) {
     console.error('Failed to start server:', err);
