@@ -799,7 +799,7 @@ export default function App() {
             <div className={`${activeTab === 'expenses' ? 'bg-[#dcedc8] p-2 rounded-xl' : ''}`}>
               <Wallet size={24} strokeWidth={activeTab === 'expenses' ? 2.5 : 2} />
             </div>
-            <span className="text-[10px] font-bold">費用</span>
+            <span className="text-[10px] font-bold">費用1</span>
           </button>
         </div>
       </nav>
