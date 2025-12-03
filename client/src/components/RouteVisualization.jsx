@@ -1,82 +1,86 @@
 import React from 'react';
-import { Route, ArrowRight, MapPin, Clock } from 'lucide-react';
+import { Home, MapPin, Utensils, Camera } from 'lucide-react';
 
 /**
- * 路線視覺化組件
- * 顯示當日所有地點的順序和路線
+ * 本日概要組件
+ * 顯示當日飯店及行程概要
  */
 export const RouteVisualization = ({ items }) => {
-  // 過濾出有地點的非交通項目
-  const locationItems = items.filter(item =>
-    item.location && item.type !== 'transport'
-  );
+  // 找出飯店
+  const hotel = items.find(item => item.type === 'hotel');
 
-  if (locationItems.length === 0) return null;
+  // 過濾出景點和餐飲
+  const spots = items.filter(item => item.type === 'spot');
+  const meals = items.filter(item => item.type === 'meal');
+
+  // 計算行程數量
+  const totalActivities = spots.length + meals.length;
 
   return (
-    <div className="bg-gradient-to-r from-[#faf8f3] to-[#f5f1e8] rounded-xl p-6 mb-6 border-2 border-[#c9a884] shadow-lg">
-      <div className="flex items-center gap-2 mb-4">
-        <Route className="text-[#8b6f47]" size={20} />
-        <h3 className="text-lg font-bold text-[#5d4037] font-serif">本日のルート</h3>
-        <span className="ml-auto text-xs text-[#8d6e63] font-mono bg-white px-2 py-1 rounded-full">
-          {locationItems.length} 箇所
-        </span>
-      </div>
+    <div className="bg-white rounded-lg p-4 mb-6 border border-[#E0DDD5] shadow-sm">
+      <h3 className="text-sm font-bold text-[#2C2C2C] mb-3 flex items-center gap-2">
+        📋 本日の概要
+      </h3>
 
-      {/* 水平滾動的路線圖 */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-4 no-scrollbar">
-        {locationItems.map((item, idx) => (
-          <React.Fragment key={item.id}>
-            {/* 地點卡片 */}
-            <div className="flex flex-col items-center flex-shrink-0 group cursor-pointer">
-              {/* 序號圓圈 */}
-              <div className="relative">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#8b6f47] to-[#6d5436] text-white flex items-center justify-center font-bold shadow-md group-hover:scale-110 transition-transform">
-                  {idx + 1}
-                </div>
-                {/* 地點類型圖標 */}
-                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white flex items-center justify-center shadow border border-[#c9a884]">
-                  {item.type === 'meal' ? '🍱' :
-                   item.type === 'hotel' ? '🏨' :
-                   item.type === 'spot' ? '📸' : '📍'}
-                </div>
-              </div>
-
-              {/* 地點名稱 */}
-              <div className="mt-2 text-xs text-center max-w-[90px] text-[#5d4037] font-medium line-clamp-2 group-hover:text-[#c44569] transition-colors">
-                {item.title}
-              </div>
-
-              {/* 時間標記 */}
-              <div className="flex items-center gap-1 text-[10px] text-[#8d6e63] mt-1">
-                <Clock size={10} />
-                <span className="font-mono">{item.time}</span>
-              </div>
+      <div className="space-y-3">
+        {/* 飯店資訊 */}
+        {hotel && (
+          <div className="flex items-start gap-3 p-3 bg-[#FAF8F5] rounded border border-[#E8E4DC]">
+            <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#8B7355] text-white flex-shrink-0">
+              <Home size={18} />
             </div>
+            <div className="flex-1 min-w-0">
+              <div className="text-xs text-[#8B7355] mb-0.5">宿泊先</div>
+              <div className="font-medium text-sm text-[#2C2C2C] truncate">{hotel.title}</div>
+              {hotel.location && (
+                <div className="text-xs text-[#5A5A5A] mt-1 flex items-center gap-1">
+                  <MapPin size={10} />
+                  <span className="truncate">{hotel.location}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
 
-            {/* 箭頭連接 */}
-            {idx < locationItems.length - 1 && (
-              <div className="flex flex-col items-center flex-shrink-0 px-3">
-                <ArrowRight className="text-[#c9a884]" size={20} />
-                <span className="text-[9px] text-[#8d6e63] mt-1 font-mono">
-                  移動
-                </span>
-              </div>
-            )}
-          </React.Fragment>
-        ))}
-      </div>
+        {/* 行程概要 */}
+        <div className="grid grid-cols-2 gap-2">
+          {/* 觀光景點 */}
+          <div className="flex items-center gap-2 p-2.5 bg-[#FAF8F5] rounded border border-[#E8E4DC]">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#FFB7C5] text-white flex-shrink-0">
+              <Camera size={14} />
+            </div>
+            <div>
+              <div className="text-[10px] text-[#5A5A5A]">観光</div>
+              <div className="text-base font-bold text-[#2C2C2C]">{spots.length} 箇所</div>
+            </div>
+          </div>
 
-      {/* 總覽統計 */}
-      <div className="mt-4 pt-4 border-t border-[#c9a884]/30 flex justify-between text-xs">
-        <div className="flex items-center gap-2 text-[#8d6e63]">
-          <MapPin size={14} className="text-[#8b6f47]" />
-          <span>開始: <strong className="text-[#5d4037]">{locationItems[0]?.location}</strong></span>
+          {/* 餐飲 */}
+          <div className="flex items-center gap-2 p-2.5 bg-[#FAF8F5] rounded border border-[#E8E4DC]">
+            <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#F39C6B] text-white flex-shrink-0">
+              <Utensils size={14} />
+            </div>
+            <div>
+              <div className="text-[10px] text-[#5A5A5A]">食事</div>
+              <div className="text-base font-bold text-[#2C2C2C]">{meals.length} 回</div>
+            </div>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-[#8d6e63]">
-          <MapPin size={14} className="text-[#c44569]" />
-          <span>終了: <strong className="text-[#5d4037]">{locationItems[locationItems.length - 1]?.location}</strong></span>
-        </div>
+
+        {/* 開始和結束地點 */}
+        {totalActivities > 0 && (
+          <div className="pt-2 border-t border-[#E8E4DC] text-xs text-[#5A5A5A] flex justify-between">
+            <span className="flex items-center gap-1">
+              <span className="text-[#8B7355]">●</span>
+              {items.find(i => i.type !== 'transport' && i.location)?.location || '未設定'}
+            </span>
+            <span>→</span>
+            <span className="flex items-center gap-1">
+              {items.filter(i => i.type !== 'transport' && i.location).slice(-1)[0]?.location || '未設定'}
+              <span className="text-[#8B7355]">●</span>
+            </span>
+          </div>
+        )}
       </div>
     </div>
   );
