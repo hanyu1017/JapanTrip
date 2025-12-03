@@ -77,27 +77,27 @@ const INITIAL_PEOPLE = ["佑瑋", "小白", "旅伴C", "旅伴D", "旅伴E"];
 
 // --- Loading Spinner Component ---
 const LoadingSpinner = () => (
-  <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50">
+  <div className="flex items-center justify-center min-h-screen bg-[#FAFAF9]">
     <div className="text-center">
-      <Loader className="animate-spin text-purple-600 mx-auto mb-4" size={48} />
-      <p className="text-purple-700 font-medium">載入中...</p>
+      <Loader className="animate-spin text-[#5A5A5A] mx-auto mb-4" size={40} />
+      <p className="text-[#5A5A5A] font-medium text-sm">載入中...</p>
     </div>
   </div>
 );
 
 // --- Error Display Component ---
 const ErrorDisplay = ({ message, onRetry }) => (
-  <div className="flex items-center justify-center min-h-screen p-4 bg-gradient-to-br from-red-50 to-orange-50">
-    <div className="bg-white border-2 border-red-300 rounded-2xl p-8 max-w-md text-center shadow-2xl">
-      <AlertCircle className="text-red-500 mx-auto mb-4" size={48} />
-      <h3 className="text-lg font-bold text-red-900 mb-2">載入失敗</h3>
-      <p className="text-red-700 mb-4">{message}</p>
+  <div className="flex items-center justify-center min-h-screen p-4 bg-[#FAFAF9]">
+    <div className="bg-white border border-[#E0E0E0] rounded-lg p-8 max-w-md text-center">
+      <AlertCircle className="text-[#D32F2F] mx-auto mb-4" size={40} />
+      <h3 className="text-base font-bold text-[#2C2C2C] mb-2">載入失敗</h3>
+      <p className="text-[#5A5A5A] text-sm mb-6">{message}</p>
       {onRetry && (
         <button
           onClick={onRetry}
-          className="flex items-center gap-2 mx-auto bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-3 rounded-xl hover:from-red-600 hover:to-orange-600 transition-all shadow-lg"
+          className="flex items-center gap-2 mx-auto bg-[#2C2C2C] text-white px-6 py-2.5 rounded hover:bg-[#1A1A1A] transition-colors text-sm"
         >
-          <RefreshCw size={16} /> 重試
+          <RefreshCw size={14} /> 重試
         </button>
       )}
     </div>
@@ -116,58 +116,56 @@ const DetailModal = ({ isOpen, onClose, item, onEdit }) => {
   const imageUrl = item.imageUrl || getFixedImage(item.id);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-md bg-black/70 print:hidden">
-      <div className="bg-gradient-to-br from-white via-pink-50 to-purple-50 rounded-3xl w-full max-w-md shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300 relative border-4 border-purple-200">
-        <div className="relative h-64 overflow-hidden group">
-          <div className="absolute inset-0 bg-gradient-to-br from-purple-200 to-pink-200 animate-pulse" />
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 print:hidden">
+      <div className="bg-white rounded-lg w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200 relative border border-[#E0E0E0]">
+        <div className="relative h-56 overflow-hidden group bg-[#F5F5F5]">
           <img
             src={imageUrl}
             alt={item.title}
-            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             loading="lazy"
           />
           <button
             onClick={onClose}
-            className="absolute top-3 right-3 p-2 bg-gradient-to-br from-purple-500 to-pink-500 text-white rounded-full hover:from-purple-600 hover:to-pink-600 transition-all backdrop-blur-sm z-10 shadow-lg"
+            className="absolute top-3 right-3 p-1.5 bg-white/90 text-[#2C2C2C] rounded-full hover:bg-white transition-all z-10 shadow-sm"
           >
-            <X size={20} />
+            <X size={18} />
           </button>
 
-          {/* Colorful gradient overlays */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-purple-900/40 to-transparent"></div>
-          <div className="absolute inset-0 bg-gradient-to-br from-pink-500/30 via-transparent to-blue-500/30"></div>
+          {/* Minimal overlay */}
+          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
 
-          <div className="absolute bottom-0 left-0 right-0 p-5">
-            <div className="flex items-center gap-2 mb-1">
-               <span className="bg-gradient-to-r from-purple-600 to-pink-600 text-white text-xs px-3 py-1 rounded-full shadow-md font-bold tracking-wide">
+          <div className="absolute bottom-0 left-0 right-0 p-4">
+            <div className="flex items-center gap-2 mb-1.5">
+               <span className="bg-white/95 text-[#2C2C2C] text-xs px-2.5 py-1 rounded font-medium">
                  {item.time}
                </span>
-               {item.type === 'meal' && <span className="bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs px-3 py-1 rounded-full shadow-md font-bold">美食</span>}
+               {item.type === 'meal' && <span className="bg-[#FFB7C5]/90 text-white text-xs px-2.5 py-1 rounded font-medium">美食</span>}
             </div>
-            <h3 className="text-2xl font-black text-white tracking-wide shadow-lg font-serif leading-tight">{item.title}</h3>
+            <h3 className="text-xl font-bold text-white leading-tight">{item.title}</h3>
             {item.location && (
-              <span className="text-pink-200 text-sm flex items-center gap-1.5 mt-2 font-medium">
-                <MapPin size={14} className="text-yellow-300" /> {item.location}
+              <span className="text-white/90 text-xs flex items-center gap-1 mt-1.5">
+                <MapPin size={12} /> {item.location}
               </span>
             )}
           </div>
         </div>
 
-        <div className="p-6 space-y-5">
-          <p className="text-purple-900 leading-relaxed text-[15px] font-medium font-sans border-l-4 border-pink-500 pl-4 bg-white/70 py-2 rounded-r-xl shadow-sm">
+        <div className="p-5 space-y-4">
+          <p className="text-[#5A5A5A] leading-relaxed text-sm border-l-2 border-[#E0E0E0] pl-3">
             {item.desc || "暫無詳細介紹。"}
           </p>
 
           {item.type === 'transport' && item.detail && (
-            <div className="bg-gradient-to-br from-blue-50 to-cyan-50 p-5 rounded-2xl border-2 border-blue-300 shadow-lg relative overflow-hidden">
-               <div className="flex items-center gap-2 text-blue-700 font-bold mb-3 pb-2 border-b-2 border-blue-200">
-                  <Train size={18} /> 交通詳情
+            <div className="bg-[#F9F9F9] p-4 rounded border border-[#E0E0E0]">
+               <div className="flex items-center gap-2 text-[#2C2C2C] font-medium mb-2 pb-2 border-b border-[#E0E0E0] text-sm">
+                  <Train size={16} /> 交通詳情
                </div>
-               <div className="text-sm text-blue-900 whitespace-pre-line leading-relaxed font-mono">
+               <div className="text-xs text-[#5A5A5A] whitespace-pre-line leading-relaxed">
                  {item.detail}
                </div>
                {item.duration && (
-                 <div className="mt-3 flex items-center gap-2 text-xs font-bold text-blue-700 bg-blue-100 px-3 py-2 rounded-full w-fit border-2 border-blue-300 shadow-sm">
+                 <div className="mt-3 flex items-center gap-1.5 text-xs text-[#5A5A5A] bg-white px-2.5 py-1.5 rounded w-fit border border-[#E0E0E0]">
                     <Clock size={12} /> {item.duration}
                  </div>
                )}
@@ -175,27 +173,27 @@ const DetailModal = ({ isOpen, onClose, item, onEdit }) => {
           )}
 
           {item.type !== 'transport' && item.detail && (
-             <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-2xl border-2 border-purple-300 text-sm text-purple-900 flex items-start gap-3 shadow-md">
-                <div className="mt-0.5"><Users size={16} className="text-purple-600" /></div>
+             <div className="bg-[#F9F9F9] p-3 rounded border border-[#E0E0E0] text-xs text-[#5A5A5A] flex items-start gap-2">
+                <div className="mt-0.5"><Users size={14} className="text-[#9E9E9E]" /></div>
                 <span className="leading-relaxed">{item.detail}</span>
              </div>
           )}
 
-          <div className="grid grid-cols-2 gap-3 mt-6 pt-4 border-t-2 border-purple-200">
+          <div className="grid grid-cols-2 gap-2 mt-5 pt-4 border-t border-[#E0E0E0]">
             <a
               href={mapUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-cyan-500 text-white py-3.5 rounded-xl font-bold shadow-lg hover:shadow-xl hover:from-blue-600 hover:to-cyan-600 transition-all active:scale-95 font-serif tracking-wide"
+              className="flex items-center justify-center gap-1.5 bg-[#2C2C2C] text-white py-2.5 rounded text-sm font-medium hover:bg-[#1A1A1A] transition-colors"
             >
-              <Navigation size={18} />
+              <Navigation size={16} />
               導航
             </a>
             <button
               onClick={() => { onClose(); onEdit(item); }}
-              className="flex items-center justify-center gap-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white py-3.5 rounded-xl font-bold hover:from-purple-600 hover:to-pink-600 transition-all active:scale-95 shadow-lg"
+              className="flex items-center justify-center gap-1.5 bg-white text-[#2C2C2C] border border-[#E0E0E0] py-2.5 rounded text-sm font-medium hover:bg-[#F9F9F9] transition-colors"
             >
-              <Edit size={18} />
+              <Edit size={16} />
               編輯
             </button>
           </div>
@@ -216,18 +214,18 @@ const EditModal = ({ isOpen, onClose, item, onSave, onDelete, saving }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 backdrop-blur-md bg-black/70 print:hidden">
-      <div className="bg-gradient-to-br from-white via-purple-50 to-pink-50 w-full sm:max-w-md sm:rounded-3xl rounded-t-3xl p-6 shadow-2xl animate-in slide-in-from-bottom duration-300 border-t-4 border-purple-500 max-h-[90vh] overflow-y-auto">
-        <h3 className="text-xl font-black mb-6 bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2 font-serif border-b-2 border-purple-300 pb-3">
-          {item.id ? <Edit size={24} className="text-purple-600" /> : <Plus size={24} className="text-purple-600" />}
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center sm:p-4 bg-black/60 print:hidden">
+      <div className="bg-white w-full sm:max-w-md sm:rounded-lg rounded-t-lg p-5 animate-in slide-in-from-bottom duration-200 border-t sm:border border-[#E0E0E0] max-h-[90vh] overflow-y-auto">
+        <h3 className="text-base font-bold mb-4 text-[#2C2C2C] flex items-center gap-2 border-b border-[#E0E0E0] pb-3">
+          {item.id ? <Edit size={20} className="text-[#5A5A5A]" /> : <Plus size={20} className="text-[#5A5A5A]" />}
           {item.id ? '編輯行程' : '新增行程'}
         </h3>
 
-        <div className="space-y-5">
+        <div className="space-y-4">
           {/* Image Upload Section */}
           <div>
-            <label className="block text-sm font-bold text-purple-700 uppercase tracking-wider mb-2 flex items-center gap-2">
-              <ImageIcon size={16} /> 圖片
+            <label className="block text-xs font-medium text-[#5A5A5A] mb-2 flex items-center gap-1.5">
+              <ImageIcon size={14} /> 圖片
             </label>
             <ImageUpload
               currentImage={formData.imageUrl}
@@ -236,31 +234,31 @@ const EditModal = ({ isOpen, onClose, item, onSave, onDelete, saving }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-purple-700 uppercase tracking-wider mb-2">標題</label>
+            <label className="block text-sm font-bold text-[#2E5C8A] uppercase tracking-wider mb-2">標題</label>
             <input
               type="text"
               value={formData.title || ''}
               onChange={e => setFormData({...formData, title: e.target.value})}
-              className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-pink-500 focus:border-pink-500 outline-none font-serif shadow-sm"
+              className="w-full p-3 bg-white border-2 border-[#D4C4DD] rounded-xl focus:ring-2 focus:ring-[#FFB7C5] focus:border-[#FFB7C5] outline-none font-serif shadow-sm"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-bold text-purple-700 uppercase tracking-wider mb-2">時間</label>
+              <label className="block text-sm font-bold text-[#2E5C8A] uppercase tracking-wider mb-2">時間</label>
               <input
                 type="time"
                 value={formData.time || '12:00'}
                 onChange={e => setFormData({...formData, time: e.target.value})}
-                className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none shadow-sm"
+                className="w-full p-3 bg-white border-2 border-[#D4C4DD] rounded-xl focus:ring-2 focus:ring-[#FFB7C5] outline-none shadow-sm"
               />
             </div>
             <div>
-              <label className="block text-sm font-bold text-purple-700 uppercase tracking-wider mb-2">類型</label>
+              <label className="block text-sm font-bold text-[#2E5C8A] uppercase tracking-wider mb-2">類型</label>
               <select
                 value={formData.type || 'spot'}
                 onChange={e => setFormData({...formData, type: e.target.value})}
-                className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none shadow-sm"
+                className="w-full p-3 bg-white border-2 border-[#D4C4DD] rounded-xl focus:ring-2 focus:ring-[#FFB7C5] outline-none shadow-sm"
               >
                 <option value="spot">📸 景點</option>
                 <option value="transport">🚅 交通</option>
@@ -272,42 +270,42 @@ const EditModal = ({ isOpen, onClose, item, onSave, onDelete, saving }) => {
           </div>
 
           <div>
-            <label className="block text-sm font-bold text-purple-700 uppercase tracking-wider mb-2">地點</label>
+            <label className="block text-sm font-bold text-[#2E5C8A] uppercase tracking-wider mb-2">地點</label>
             <input
               type="text"
               value={formData.location || ''}
               onChange={e => setFormData({...formData, location: e.target.value})}
-              className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-pink-500 outline-none shadow-sm"
+              className="w-full p-3 bg-white border-2 border-[#D4C4DD] rounded-xl focus:ring-2 focus:ring-[#FFB7C5] outline-none shadow-sm"
               placeholder="地點名稱"
             />
           </div>
 
           <div>
-             <label className="block text-sm font-bold text-purple-700 uppercase tracking-wider mb-2">詳細說明</label>
+             <label className="block text-sm font-bold text-[#2E5C8A] uppercase tracking-wider mb-2">詳細說明</label>
              <textarea
                 value={formData.detail || ''}
                 onChange={e => setFormData({...formData, detail: e.target.value})}
-                className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl h-24 text-sm focus:ring-2 focus:ring-pink-500 outline-none font-mono leading-relaxed shadow-sm"
+                className="w-full p-3 bg-white border-2 border-[#D4C4DD] rounded-xl h-24 text-sm focus:ring-2 focus:ring-[#FFB7C5] outline-none font-mono leading-relaxed shadow-sm"
                 placeholder="輸入詳細交通方式、轉乘點或備註..."
               />
           </div>
 
           <div>
-             <label className="block text-sm font-bold text-purple-700 uppercase tracking-wider mb-2">簡述</label>
+             <label className="block text-sm font-bold text-[#2E5C8A] uppercase tracking-wider mb-2">簡述</label>
              <textarea
                 value={formData.desc || ''}
                 onChange={e => setFormData({...formData, desc: e.target.value})}
-                className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl h-16 text-sm focus:ring-2 focus:ring-pink-500 outline-none shadow-sm"
+                className="w-full p-3 bg-white border-2 border-[#D4C4DD] rounded-xl h-16 text-sm focus:ring-2 focus:ring-[#FFB7C5] outline-none shadow-sm"
                 placeholder="簡單描述..."
               />
           </div>
 
-          <div className="flex gap-3 mt-8 pt-6 border-t-2 border-purple-200">
+          <div className="flex gap-3 mt-8 pt-6 border-t-2 border-[#D4C4DD]">
             {item.id && (
               <button
                 onClick={() => onDelete(item.id)}
                 disabled={saving}
-                className="px-4 py-3 bg-gradient-to-r from-red-500 to-orange-500 text-white rounded-xl font-bold hover:from-red-600 hover:to-orange-600 transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg"
+                className="px-4 py-3 bg-gradient-to-r from-[#C9171E] to-[#E83828] text-white rounded-xl font-bold hover:from-[#A01318] hover:to-[#C02820] transition-all disabled:opacity-50 flex items-center gap-2 shadow-lg"
               >
                 <Trash2 size={16} /> 刪除
               </button>
@@ -315,7 +313,7 @@ const EditModal = ({ isOpen, onClose, item, onSave, onDelete, saving }) => {
             <button
               onClick={() => onSave(formData)}
               disabled={saving}
-              className="flex-1 bg-gradient-to-r from-purple-600 to-pink-600 text-white py-3 rounded-xl font-bold hover:from-purple-700 hover:to-pink-700 shadow-lg transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="flex-1 bg-gradient-to-r from-[#2E5C8A] to-[#A99BBD] text-white py-3 rounded-xl font-bold hover:from-[#165E83] hover:to-[#8A7B9D] shadow-lg transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
             >
               {saving ? <Loader className="animate-spin" size={16} /> : <Save size={16} />}
               {saving ? '儲存中...' : '儲存'}
@@ -323,7 +321,7 @@ const EditModal = ({ isOpen, onClose, item, onSave, onDelete, saving }) => {
             <button
               onClick={onClose}
               disabled={saving}
-              className="px-6 py-3 bg-white text-purple-700 border-2 border-purple-300 rounded-xl font-bold hover:bg-purple-50 transition-colors disabled:opacity-50 shadow-sm"
+              className="px-6 py-3 bg-white text-[#2E5C8A] border-2 border-[#D4C4DD] rounded-xl font-bold hover:bg-[#FFF0F3] transition-colors disabled:opacity-50 shadow-sm"
             >
               取消
             </button>
@@ -539,55 +537,55 @@ export default function App() {
     if (!currentDayData) return <div>找不到該天行程</div>;
 
     return (
-      <div className="pb-28">
+      <div className="pb-20">
         {/* Print Button */}
-        <div className="print:hidden sticky top-16 z-30 flex justify-end p-4">
+        <div className="print:hidden sticky top-14 z-30 flex justify-end px-4 py-3">
           <button
             onClick={handlePrint}
-            className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-full font-bold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg active:scale-95"
+            className="flex items-center gap-1.5 bg-white border border-[#E0E0E0] text-[#2C2C2C] px-4 py-2 rounded text-xs font-medium hover:bg-[#F5F5F5] transition-colors"
           >
-            <Printer size={18} />
-            列印行程
+            <Printer size={14} />
+            列印
           </button>
         </div>
 
         {/* Day Selector */}
-        <div className="sticky top-0 z-40 bg-gradient-to-r from-purple-100 via-pink-100 to-blue-100 backdrop-blur-md border-b-4 border-purple-400 shadow-xl overflow-x-auto no-scrollbar print:relative">
-          <div className="flex p-3 gap-2 min-w-max">
+        <div className="sticky top-14 z-40 bg-white border-b border-[#E0E0E0] overflow-x-auto no-scrollbar print:relative">
+          <div className="flex px-4 py-2 gap-1.5 min-w-max">
             {days.map(d => (
               <button
                 key={d.day}
                 onClick={() => setCurrentDay(d.day)}
-                className={`flex flex-col items-center px-5 py-3 rounded-2xl transition-all duration-300 border-3 shadow-md ${
+                className={`flex flex-col items-center px-4 py-2 rounded transition-all ${
                   currentDay === d.day
-                  ? 'bg-gradient-to-br from-purple-600 via-pink-600 to-blue-600 text-white shadow-2xl border-transparent scale-110'
-                  : 'bg-white text-purple-600 hover:bg-purple-50 border-purple-300'
+                  ? 'bg-[#2C2C2C] text-white'
+                  : 'bg-[#F5F5F5] text-[#5A5A5A] hover:bg-[#EEEEEE]'
                 }`}
               >
-                <span className={`text-xs uppercase tracking-wider font-bold mb-0.5 ${currentDay === d.day ? 'text-yellow-300' : 'text-purple-400'}`}>
+                <span className="text-[10px] uppercase tracking-wide font-medium mb-0.5">
                   Day {d.day}
                 </span>
-                <span className="text-sm font-bold whitespace-nowrap font-serif">{d.date.split(' ')[0]}</span>
+                <span className="text-xs whitespace-nowrap">{d.date.split(' ')[0]}</span>
               </button>
             ))}
           </div>
         </div>
 
-        <div className="p-4 max-w-2xl mx-auto">
-          <div className="flex justify-between items-end mb-6 mt-2">
+        <div className="px-4 py-6 max-w-3xl mx-auto">
+          <div className="flex justify-between items-center mb-6">
             <div>
-              <h2 className="text-4xl font-black bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 bg-clip-text text-transparent flex items-center gap-2 font-serif">
+              <h2 className="text-xl font-bold text-[#2C2C2C]">
                 Day {currentDay}
               </h2>
-               <span className="text-base font-bold text-purple-600 block mt-1 tracking-wide">
+               <span className="text-sm text-[#5A5A5A] block mt-0.5">
                 {currentDayData.title}
               </span>
             </div>
             <button
               onClick={openAddModal}
-              className="print:hidden flex items-center gap-2 bg-gradient-to-r from-pink-500 to-rose-500 text-white px-5 py-3 rounded-full text-sm font-bold hover:from-pink-600 hover:to-rose-600 transition-all shadow-lg active:scale-95"
+              className="print:hidden flex items-center gap-1.5 bg-[#2C2C2C] text-white px-4 py-2 rounded text-xs font-medium hover:bg-[#1A1A1A] transition-colors"
             >
-              <Plus size={18} /> 新增
+              <Plus size={14} /> 新增
             </button>
           </div>
 
@@ -595,9 +593,9 @@ export default function App() {
           <RouteVisualization items={currentDayData.items} />
 
           {/* Timeline */}
-          <div className="relative space-y-6 mt-8">
-            {/* Vertical Rainbow Gradient Line */}
-            <div className="absolute left-[28px] top-4 bottom-4 w-1.5 bg-gradient-to-b from-pink-500 via-purple-500 to-blue-500 rounded-full shadow-lg -z-10"></div>
+          <div className="relative space-y-4 mt-6">
+            {/* Vertical Line */}
+            <div className="absolute left-[14px] top-2 bottom-2 w-px bg-[#E0E0E0] -z-10"></div>
 
             {currentDayData.items.map((item, idx) => {
               const prevItem = idx > 0 ? currentDayData.items[idx-1] : null;
@@ -607,28 +605,12 @@ export default function App() {
               const isTransport = item.type === 'transport';
               const imageUrl = item.imageUrl || getFixedImage(item.id);
 
-              // Colorful gradient based on type
-              const typeGradients = {
-                transport: 'from-blue-500 to-cyan-500',
-                meal: 'from-orange-500 to-yellow-500',
-                hotel: 'from-purple-500 to-pink-500',
-                flight: 'from-indigo-500 to-blue-500',
-                spot: 'from-pink-500 to-rose-500'
-              };
-
               return (
-                <div key={item.id} className="relative pl-20 group">
-                  {/* Enhanced Timeline Dot & Time */}
-                  <div className="absolute left-0 top-0 flex flex-col items-center z-10">
-                     <div className={`relative w-14 h-14 rounded-full border-4 border-white shadow-2xl flex items-center justify-center font-bold
-                        bg-gradient-to-br ${typeGradients[item.type] || typeGradients.spot} text-white
-                     `}>
-                       <div className="text-center">
-                         <div className="text-sm leading-none font-black">{item.time.split(':')[0]}</div>
-                         <div className="text-[10px] leading-none mt-0.5 opacity-90">:{item.time.split(':')[1]}</div>
-                       </div>
-                       {/* Pulse animation */}
-                       <div className={`absolute inset-0 rounded-full bg-gradient-to-br ${typeGradients[item.type] || typeGradients.spot} animate-ping opacity-20`}></div>
+                <div key={item.id} className="relative pl-12 group">
+                  {/* Timeline Dot & Time */}
+                  <div className="absolute left-0 top-1 flex items-center gap-2 z-10">
+                     <div className="w-7 h-7 rounded-full border-2 border-white bg-[#2C2C2C] shadow-sm flex items-center justify-center">
+                       <div className="text-[9px] leading-none text-white font-medium">{item.time.split(':')[0]}</div>
                      </div>
                   </div>
 
@@ -636,58 +618,56 @@ export default function App() {
                   {isTransport ? (
                     <div
                       onClick={() => setDetailModalItem(itemWithPrev)}
-                      className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-5 border-3 border-blue-300 shadow-lg hover:shadow-2xl transition-all cursor-pointer relative overflow-hidden"
+                      className="bg-[#F9F9F9] rounded p-3 border border-[#E0E0E0] hover:border-[#9E9E9E] transition-all cursor-pointer"
                     >
                        <div className="flex justify-between items-start mb-2">
-                          <div className="flex items-center gap-2 font-bold text-blue-800">
-                            <Train size={18} className="text-blue-600" />
-                            <span className="text-lg">{item.title}</span>
+                          <div className="flex items-center gap-2 font-medium text-[#2C2C2C] text-sm">
+                            <Train size={14} className="text-[#5A5A5A]" />
+                            <span>{item.title}</span>
                           </div>
                           {item.duration && (
-                            <div className="text-xs font-bold bg-blue-200 text-blue-800 px-3 py-1 rounded-full border-2 border-blue-400 shadow-sm">
+                            <div className="text-[10px] text-[#5A5A5A] bg-white px-2 py-1 rounded border border-[#E0E0E0]">
                                {item.duration}
                             </div>
                           )}
                        </div>
                        {item.detail && (
-                         <div className="text-sm bg-white p-3 rounded-xl border-2 border-blue-200 font-mono text-blue-900 whitespace-pre-line leading-relaxed shadow-sm">
-                            {item.detail.length > 100 ? item.detail.substring(0, 100) + '...' : item.detail}
+                         <div className="text-xs bg-white p-2 rounded border border-[#E0E0E0] text-[#5A5A5A] whitespace-pre-line leading-relaxed">
+                            {item.detail.length > 80 ? item.detail.substring(0, 80) + '...' : item.detail}
                          </div>
                        )}
                     </div>
                   ) : (
                     <div
                        onClick={() => setDetailModalItem(itemWithPrev)}
-                       className="relative h-56 rounded-3xl overflow-hidden shadow-xl hover:shadow-2xl transition-all cursor-pointer group-hover:-translate-y-2 duration-300 border-4 border-white"
+                       className="relative h-44 rounded overflow-hidden border border-[#E0E0E0] hover:border-[#9E9E9E] transition-all cursor-pointer bg-[#F5F5F5]"
                     >
                        <img
                          src={imageUrl}
                          alt={item.title}
-                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                         className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                          loading="lazy"
                        />
 
-                       {/* Colorful gradient overlays */}
-                       <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-purple-900/30 to-transparent"></div>
-                       <div className="absolute inset-0 bg-gradient-to-br from-pink-500/30 via-transparent to-blue-500/30"></div>
-                       <div className="absolute inset-0 bg-gradient-to-tl from-yellow-500/20 via-transparent to-purple-500/20"></div>
+                       {/* Minimal overlay */}
+                       <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent"></div>
 
-                       <div className="absolute inset-0 p-6 flex flex-col justify-end">
+                       <div className="absolute inset-0 p-4 flex flex-col justify-end">
                           <div className="flex justify-between items-end">
                              <div>
                                 {item.type === 'meal' && (
-                                   <span className="inline-block px-3 py-1 mb-2 bg-gradient-to-r from-orange-500 to-yellow-500 text-white text-xs font-bold rounded-full backdrop-blur-sm shadow-lg">美食饗宴</span>
+                                   <span className="inline-block px-2 py-0.5 mb-1.5 bg-[#FFB7C5] text-white text-[10px] font-medium rounded">美食</span>
                                 )}
-                                <h3 className="text-2xl font-black text-white font-serif leading-tight shadow-2xl mb-1">
+                                <h3 className="text-base font-bold text-white leading-tight mb-1">
                                    {item.title}
                                 </h3>
                                 {item.location && (
-                                  <div className="flex items-center gap-1.5 text-sm text-yellow-300 font-bold">
-                                     <MapPin size={14} /> {item.location}
+                                  <div className="flex items-center gap-1 text-xs text-white/90">
+                                     <MapPin size={10} /> {item.location}
                                   </div>
                                 )}
                              </div>
-                             <ChevronRight className="text-white/90 group-hover:translate-x-2 transition-transform" size={28} />
+                             <ChevronRight className="text-white/80 group-hover:translate-x-1 transition-transform" size={20} />
                           </div>
                        </div>
                     </div>
@@ -697,12 +677,12 @@ export default function App() {
             })}
           </div>
 
-          <div className="mt-8 text-center print:hidden">
+          <div className="mt-6 text-center print:hidden">
                <button
                  onClick={openAddModal}
-                 className="px-8 py-4 border-3 border-dashed border-purple-400 rounded-full text-purple-600 hover:border-pink-500 hover:text-pink-600 hover:bg-pink-50 transition-all font-bold text-base flex items-center justify-center gap-2 mx-auto shadow-md hover:shadow-xl"
+                 className="px-6 py-2.5 border border-dashed border-[#E0E0E0] rounded text-[#5A5A5A] hover:border-[#2C2C2C] hover:text-[#2C2C2C] hover:bg-[#F9F9F9] transition-all text-sm flex items-center justify-center gap-1.5 mx-auto"
                >
-                  <Plus size={20} /> 新增行程
+                  <Plus size={16} /> 新增行程
                </button>
           </div>
         </div>
@@ -717,113 +697,113 @@ export default function App() {
       <div className="print:hidden flex justify-end mb-4">
         <button
           onClick={handlePrint}
-          className="flex items-center gap-2 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 py-3 rounded-full font-bold hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg active:scale-95"
+          className="flex items-center gap-2 bg-gradient-to-r from-[#93AA6D] to-[#C5D8A4] text-white px-6 py-3 rounded-full font-bold hover:from-[#7A9154] hover:to-[#93AA6D] transition-all shadow-lg active:scale-95"
         >
           <Printer size={18} />
           列印費用明細
         </button>
       </div>
 
-      <h2 className="text-3xl font-black mb-6 bg-gradient-to-r from-green-600 to-emerald-600 bg-clip-text text-transparent flex items-center gap-2 font-serif">
-        <Wallet className="text-green-600" size={28} /> 旅費帳本
+      <h2 className="text-3xl font-black mb-6 bg-gradient-to-r from-[#93AA6D] to-[#C5D8A4] bg-clip-text text-transparent flex items-center gap-2 font-serif">
+        <Wallet className="text-[#93AA6D]" size={28} /> 旅費帳本
       </h2>
 
       {/* Flight Cost Input */}
-      <div className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-6 mb-6 border-3 border-blue-300 shadow-lg print:hidden">
-        <h3 className="font-bold text-blue-800 mb-4 flex items-center gap-2 text-lg">
+      <div className="bg-gradient-to-br from-[#E8F5F8] to-[#D4E8F0] rounded-2xl p-6 mb-6 border-3 border-[#4A7BA7] shadow-lg print:hidden">
+        <h3 className="font-bold text-[#2E5C8A] mb-4 flex items-center gap-2 text-lg">
           <Plane size={20} /> 機票費用
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-bold text-blue-700 mb-2">每人機票價格 (TWD)</label>
+            <label className="block text-sm font-bold text-[#2E5C8A] mb-2">每人機票價格 (TWD)</label>
             <input
               type="number"
               value={flightCost}
               onChange={(e) => setFlightCost(parseInt(e.target.value) || 0)}
-              className="w-full p-3 bg-white border-2 border-blue-300 rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-blue-500 shadow-sm"
+              className="w-full p-3 bg-white border-2 border-[#7BA3C3] rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-[#4A7BA7] shadow-sm"
               placeholder="15000"
             />
           </div>
           <div className="flex items-end">
-            <div className="bg-blue-100 p-4 rounded-xl border-2 border-blue-300 w-full shadow-sm">
-              <div className="text-xs text-blue-600 font-bold mb-1">總機票費用</div>
-              <div className="text-2xl font-black text-blue-800 font-mono">¥{totalFlightCost.toLocaleString()}</div>
-              <div className="text-xs text-blue-600 mt-1">{INITIAL_PEOPLE.length} 人 × ¥{flightCost.toLocaleString()}</div>
+            <div className="bg-[#D4E8F0] p-4 rounded-xl border-2 border-[#4A7BA7] w-full shadow-sm">
+              <div className="text-xs text-[#2E5C8A] font-bold mb-1">總機票費用</div>
+              <div className="text-2xl font-black text-[#2E5C8A] font-mono">¥{totalFlightCost.toLocaleString()}</div>
+              <div className="text-xs text-[#2E5C8A] mt-1">{INITIAL_PEOPLE.length} 人 × ¥{flightCost.toLocaleString()}</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Accommodation Cost Input */}
-      <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-2xl p-6 mb-6 border-3 border-purple-300 shadow-lg print:hidden">
-        <h3 className="font-bold text-purple-800 mb-4 flex items-center gap-2 text-lg">
+      <div className="bg-gradient-to-br from-[#FFF0F3] to-[#FFE8F0] rounded-2xl p-6 mb-6 border-3 border-[#FFB7C5] shadow-lg print:hidden">
+        <h3 className="font-bold text-[#A99BBD] mb-4 flex items-center gap-2 text-lg">
           <Home size={20} /> 住宿費用
         </h3>
         <div className="grid grid-cols-3 gap-4">
           <div>
-            <label className="block text-sm font-bold text-purple-700 mb-2">每晚價格 (TWD)</label>
+            <label className="block text-sm font-bold text-[#A99BBD] mb-2">每晚價格 (TWD)</label>
             <input
               type="number"
               value={accommodationCostPerNight}
               onChange={(e) => setAccommodationCostPerNight(parseInt(e.target.value) || 0)}
-              className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+              className="w-full p-3 bg-white border-2 border-[#D4C4DD] rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-[#FFB7C5] shadow-sm"
               placeholder="3000"
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-purple-700 mb-2">住宿天數</label>
+            <label className="block text-sm font-bold text-[#A99BBD] mb-2">住宿天數</label>
             <input
               type="number"
               value={numberOfNights}
               onChange={(e) => setNumberOfNights(parseInt(e.target.value) || 0)}
-              className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+              className="w-full p-3 bg-white border-2 border-[#D4C4DD] rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-[#FFB7C5] shadow-sm"
               placeholder="6"
             />
           </div>
           <div className="flex items-end">
-            <div className="bg-purple-100 p-4 rounded-xl border-2 border-purple-300 w-full shadow-sm">
-              <div className="text-xs text-purple-600 font-bold mb-1">總住宿費用</div>
-              <div className="text-2xl font-black text-purple-800 font-mono">¥{totalAccommodationCost.toLocaleString()}</div>
-              <div className="text-xs text-purple-600 mt-1">{numberOfNights} 晚 × ¥{accommodationCostPerNight.toLocaleString()}</div>
+            <div className="bg-[#FFE8F0] p-4 rounded-xl border-2 border-[#FFB7C5] w-full shadow-sm">
+              <div className="text-xs text-[#A99BBD] font-bold mb-1">總住宿費用</div>
+              <div className="text-2xl font-black text-[#A99BBD] font-mono">¥{totalAccommodationCost.toLocaleString()}</div>
+              <div className="text-xs text-[#A99BBD] mt-1">{numberOfNights} 晚 × ¥{accommodationCostPerNight.toLocaleString()}</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Grand Total Summary */}
-      <div className="bg-gradient-to-br from-yellow-400 via-orange-400 to-red-400 rounded-3xl p-8 text-white shadow-2xl mb-6 relative overflow-hidden">
+      <div className="bg-gradient-to-br from-[#F39C6B] via-[#FFB997] to-[#FFB7C5] rounded-3xl p-8 text-white shadow-2xl mb-6 relative overflow-hidden">
         <div className="absolute right-0 top-0 opacity-20"><DollarSign size={150} /></div>
         <div className="absolute -left-10 -bottom-10 opacity-10"><Wallet size={200} /></div>
         <div className="relative z-10">
-          <p className="text-yellow-100 text-sm font-bold tracking-wider mb-2">旅行總花費</p>
+          <p className="text-[#FFF8E7] text-sm font-bold tracking-wider mb-2">旅行總花費</p>
           <div className="text-5xl font-black font-mono mb-4">¥{grandTotal.toLocaleString()}</div>
 
           <div className="grid grid-cols-2 gap-4 mt-6">
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/30">
-              <div className="text-yellow-100 text-xs font-bold mb-1">人均費用</div>
+              <div className="text-[#FFF8E7] text-xs font-bold mb-1">人均費用</div>
               <div className="text-3xl font-black">¥{Math.round(perPersonCost).toLocaleString()}</div>
-              <div className="text-yellow-100 text-xs mt-1">每人平均</div>
+              <div className="text-[#FFF8E7] text-xs mt-1">每人平均</div>
             </div>
             <div className="bg-white/20 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/30">
-              <div className="text-yellow-100 text-xs font-bold mb-1">旅行人數</div>
+              <div className="text-[#FFF8E7] text-xs font-bold mb-1">旅行人數</div>
               <div className="text-3xl font-black">{INITIAL_PEOPLE.length} 人</div>
-              <div className="text-yellow-100 text-xs mt-1">{INITIAL_PEOPLE.join(', ')}</div>
+              <div className="text-[#FFF8E7] text-xs mt-1">{INITIAL_PEOPLE.join(', ')}</div>
             </div>
           </div>
 
           {/* Breakdown */}
           <div className="mt-6 space-y-2 bg-white/10 backdrop-blur-sm rounded-2xl p-4 border-2 border-white/20">
-            <div className="text-yellow-100 text-sm font-bold mb-3 border-b border-white/30 pb-2">費用明細</div>
+            <div className="text-[#FFF8E7] text-sm font-bold mb-3 border-b border-white/30 pb-2">費用明細</div>
             <div className="flex justify-between text-sm">
-              <span className="text-yellow-100">機票費用</span>
+              <span className="text-[#FFF8E7]">機票費用</span>
               <span className="font-mono font-bold">¥{totalFlightCost.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-yellow-100">住宿費用</span>
+              <span className="text-[#FFF8E7]">住宿費用</span>
               <span className="font-mono font-bold">¥{totalAccommodationCost.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-yellow-100">其他支出</span>
+              <span className="text-[#FFF8E7]">其他支出</span>
               <span className="font-mono font-bold">¥{totalSpent.toLocaleString()}</span>
             </div>
             <div className="flex justify-between text-base font-bold border-t-2 border-white/30 pt-2 mt-2">
@@ -835,7 +815,7 @@ export default function App() {
       </div>
 
       {/* Public Fund Overview Card */}
-      <div className="bg-gradient-to-br from-green-500 to-emerald-600 rounded-3xl p-6 text-white shadow-xl mb-6 relative overflow-hidden border-4 border-green-300">
+      <div className="bg-gradient-to-br from-[#93AA6D] to-[#C5D8A4] rounded-3xl p-6 text-white shadow-xl mb-6 relative overflow-hidden border-4 border-[#C5D8A4]">
         <div className="absolute right-0 top-0 opacity-10"><Wallet size={120} /></div>
         <div className="absolute -right-8 -bottom-8 opacity-5"><Camera size={180} /></div>
         <div className="relative z-10">
@@ -975,26 +955,19 @@ export default function App() {
         }
       `}</style>
 
-      <div className="min-h-screen bg-gradient-to-br from-pink-50 via-purple-50 to-blue-50 font-['Noto_Sans_TC'] text-stone-900">
+      <div className="min-h-screen bg-[#FAFAF9] font-['Noto_Sans_TC'] text-[#2C2C2C]">
 
         {/* Header */}
-        <header className="bg-gradient-to-r from-purple-600 via-pink-600 to-blue-600 text-white shadow-2xl sticky top-0 z-50 border-b-4 border-yellow-400 print:relative">
-          <div className="max-w-3xl mx-auto px-6 py-6 flex justify-between items-center relative overflow-hidden">
-             <div className="absolute right-0 top-0 opacity-10">
-               <Camera size={150} />
-             </div>
-             <div className="absolute left-0 bottom-0 opacity-10">
-               <MapPin size={120} />
-             </div>
-             <div className="relative z-10">
-               <h1 className="text-4xl font-black tracking-tight flex items-center gap-3 font-serif">
-                 ⛩️ 京阪奈 <span className="text-yellow-300 font-light">冬之旅</span>
+        <header className="bg-white border-b border-[#E0E0E0] sticky top-0 z-50 print:relative">
+          <div className="max-w-4xl mx-auto px-5 py-3 flex justify-between items-center">
+             <div>
+               <h1 className="text-lg font-bold tracking-tight flex items-center gap-2">
+                 京阪奈 <span className="text-[#9E9E9E] font-normal text-base">冬之旅</span>
                </h1>
-               <div className="text-xs text-yellow-200 font-mono mt-2 tracking-[0.3em] uppercase font-bold">Kyoto Osaka Nara Trip 2025</div>
+               <div className="text-[10px] text-[#9E9E9E] mt-0.5 tracking-wide">Kyoto Osaka Nara | Jan 6-12</div>
              </div>
-             <div className="text-right text-sm text-white bg-white/20 backdrop-blur-sm px-4 py-3 rounded-2xl border-2 border-white/30 shadow-xl">
-               <div className="font-mono font-bold text-yellow-300 text-lg">{days.length} Days</div>
-               <div className="text-xs mt-1">Jan 6-12</div>
+             <div className="text-xs text-[#5A5A5A] bg-[#F5F5F5] px-3 py-1.5 rounded">
+               <span className="font-medium">{days.length}</span> 天
              </div>
           </div>
         </header>
@@ -1005,25 +978,21 @@ export default function App() {
         </main>
 
         {/* Bottom Navigation */}
-        <nav className="print:hidden fixed bottom-0 w-full bg-gradient-to-r from-purple-100 via-pink-100 to-blue-100 backdrop-blur-md border-t-4 border-purple-400 px-6 py-4 pb-safe z-50 shadow-2xl">
+        <nav className="print:hidden fixed bottom-0 w-full bg-white border-t border-[#E0E0E0] px-4 py-2 pb-safe z-50">
           <div className="max-w-md mx-auto flex justify-around items-center">
             <button
               onClick={() => setActiveTab('itinerary')}
-              className={`flex flex-col items-center gap-2 p-3 w-28 transition-all rounded-2xl ${activeTab === 'itinerary' ? 'text-purple-700 -translate-y-2 bg-white shadow-lg' : 'text-purple-400'}`}
+              className={`flex flex-col items-center gap-1 py-2 px-6 transition-all ${activeTab === 'itinerary' ? 'text-[#2C2C2C]' : 'text-[#9E9E9E]'}`}
             >
-              <div className={`${activeTab === 'itinerary' ? 'bg-gradient-to-br from-purple-600 to-pink-600 p-3 rounded-2xl shadow-xl' : ''}`}>
-                <MapPin size={26} strokeWidth={activeTab === 'itinerary' ? 2.5 : 2} className={activeTab === 'itinerary' ? 'text-white' : ''} />
-              </div>
-              <span className="text-xs font-bold">行程</span>
+              <MapPin size={22} strokeWidth={activeTab === 'itinerary' ? 2 : 1.5} />
+              <span className="text-[10px] font-medium">行程</span>
             </button>
             <button
               onClick={() => setActiveTab('expenses')}
-              className={`flex flex-col items-center gap-2 p-3 w-28 transition-all rounded-2xl ${activeTab === 'expenses' ? 'text-green-700 -translate-y-2 bg-white shadow-lg' : 'text-green-400'}`}
+              className={`flex flex-col items-center gap-1 py-2 px-6 transition-all ${activeTab === 'expenses' ? 'text-[#2C2C2C]' : 'text-[#9E9E9E]'}`}
             >
-              <div className={`${activeTab === 'expenses' ? 'bg-gradient-to-br from-green-600 to-emerald-600 p-3 rounded-2xl shadow-xl' : ''}`}>
-                <Wallet size={26} strokeWidth={activeTab === 'expenses' ? 2.5 : 2} className={activeTab === 'expenses' ? 'text-white' : ''} />
-              </div>
-              <span className="text-xs font-bold">費用</span>
+              <Wallet size={22} strokeWidth={activeTab === 'expenses' ? 2 : 1.5} />
+              <span className="text-[10px] font-medium">費用</span>
             </button>
           </div>
         </nav>
