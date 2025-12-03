@@ -77,7 +77,7 @@ const INITIAL_PEOPLE = ["佑瑋", "小白", "旅伴C", "旅伴D", "旅伴E"];
 
 // --- Loading Spinner Component ---
 const LoadingSpinner = () => (
-  <div className="flex items-center justify-center min-h-screen bg-[#FAFAF9]">
+  <div className="flex items-center justify-center min-h-screen bg-[#F5F1E8]">
     <div className="text-center">
       <Loader className="animate-spin text-[#5A5A5A] mx-auto mb-4" size={40} />
       <p className="text-[#5A5A5A] font-medium text-sm">載入中...</p>
@@ -87,7 +87,7 @@ const LoadingSpinner = () => (
 
 // --- Error Display Component ---
 const ErrorDisplay = ({ message, onRetry }) => (
-  <div className="flex items-center justify-center min-h-screen p-4 bg-[#FAFAF9]">
+  <div className="flex items-center justify-center min-h-screen p-4 bg-[#F5F1E8]">
     <div className="bg-white border border-[#E0E0E0] rounded-lg p-8 max-w-md text-center">
       <AlertCircle className="text-[#D32F2F] mx-auto mb-4" size={40} />
       <h3 className="text-base font-bold text-[#2C2C2C] mb-2">載入失敗</h3>
@@ -357,6 +357,8 @@ export default function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [isEditingFund, setIsEditingFund] = useState(false);
+  const [tempFundTotal, setTempFundTotal] = useState(publicFundTotal);
 
   // Load itinerary from API
   const loadItinerary = async () => {
@@ -387,9 +389,23 @@ export default function App() {
   const loadSettings = async () => {
     try {
       const response = await axios.get(`${API_URL}/settings/publicFundTotal`);
-      setPublicFundTotal(parseInt(response.data.value));
+      const total = parseInt(response.data.value);
+      setPublicFundTotal(total);
+      setTempFundTotal(total);
     } catch (err) {
       console.log('Using default public fund total');
+    }
+  };
+
+  // Save public fund total
+  const savePublicFundTotal = async () => {
+    try {
+      await axios.post(`${API_URL}/settings/publicFundTotal`, { value: tempFundTotal });
+      setPublicFundTotal(tempFundTotal);
+      setIsEditingFund(false);
+    } catch (err) {
+      console.error('Error saving public fund total:', err);
+      alert('儲存失敗：' + (err.response?.data?.error || '未知錯誤'));
     }
   };
 
@@ -593,9 +609,9 @@ export default function App() {
           <RouteVisualization items={currentDayData.items} />
 
           {/* Timeline */}
-          <div className="relative space-y-4 mt-6">
-            {/* Vertical Line */}
-            <div className="absolute left-[14px] top-2 bottom-2 w-px bg-[#E0E0E0] -z-10"></div>
+          <div className="relative space-y-3 mt-6">
+            {/* Vertical Dashed Line */}
+            <div className="absolute left-[18px] top-6 bottom-6 w-[2px] bg-gradient-to-b from-[#E0DDD5] via-[#D0C9BA] to-[#E0DDD5] -z-10" style={{backgroundImage: 'repeating-linear-gradient(0deg, #D0C9BA, #D0C9BA 8px, transparent 8px, transparent 16px)'}}></div>
 
             {currentDayData.items.map((item, idx) => {
               const prevItem = idx > 0 ? currentDayData.items[idx-1] : null;
@@ -606,11 +622,11 @@ export default function App() {
               const imageUrl = item.imageUrl || getFixedImage(item.id);
 
               return (
-                <div key={item.id} className="relative pl-12 group">
+                <div key={item.id} className="relative pl-14 group">
                   {/* Timeline Dot & Time */}
-                  <div className="absolute left-0 top-1 flex items-center gap-2 z-10">
-                     <div className="w-7 h-7 rounded-full border-2 border-white bg-[#2C2C2C] shadow-sm flex items-center justify-center">
-                       <div className="text-[9px] leading-none text-white font-medium">{item.time.split(':')[0]}</div>
+                  <div className="absolute left-0 top-2 flex items-center gap-3 z-10">
+                     <div className="w-9 h-9 rounded-full border-2 border-[#F5F1E8] bg-[#2C2C2C] shadow-md flex items-center justify-center">
+                       <div className="text-[10px] leading-none text-white font-medium">{item.time.split(':')[0]}:{item.time.split(':')[1]}</div>
                      </div>
                   </div>
 
@@ -618,24 +634,25 @@ export default function App() {
                   {isTransport ? (
                     <div
                       onClick={() => setDetailModalItem(itemWithPrev)}
-                      className="bg-[#F9F9F9] rounded p-3 border border-[#E0E0E0] hover:border-[#9E9E9E] transition-all cursor-pointer"
+                      className="relative bg-white rounded-lg p-3 border-l-4 border-[#8B7355] shadow-sm hover:shadow-md transition-all cursor-pointer ml-2"
                     >
-                       <div className="flex justify-between items-start mb-2">
-                          <div className="flex items-center gap-2 font-medium text-[#2C2C2C] text-sm">
-                            <Train size={14} className="text-[#5A5A5A]" />
-                            <span>{item.title}</span>
+                       <div className="flex items-center gap-2 mb-2">
+                          <div className="flex items-center justify-center w-8 h-8 rounded-full bg-[#8B7355] text-white">
+                            <Train size={16} />
                           </div>
-                          {item.duration && (
-                            <div className="text-[10px] text-[#5A5A5A] bg-white px-2 py-1 rounded border border-[#E0E0E0]">
-                               {item.duration}
-                            </div>
-                          )}
+                          <div className="flex-1">
+                            <div className="font-medium text-[#2C2C2C] text-sm">{item.title}</div>
+                            {item.duration && (
+                              <div className="text-[10px] text-[#8B7355] mt-0.5">所需時間: {item.duration}</div>
+                            )}
+                          </div>
                        </div>
                        {item.detail && (
-                         <div className="text-xs bg-white p-2 rounded border border-[#E0E0E0] text-[#5A5A5A] whitespace-pre-line leading-relaxed">
+                         <div className="text-xs bg-[#FAF8F5] p-2.5 rounded text-[#5A5A5A] whitespace-pre-line leading-relaxed border border-[#E8E4DC]">
                             {item.detail.length > 80 ? item.detail.substring(0, 80) + '...' : item.detail}
                          </div>
                        )}
+                       <div className="absolute -left-[2px] top-1/2 -translate-y-1/2 w-1 h-8 bg-[#8B7355]"></div>
                     </div>
                   ) : (
                     <div
@@ -709,62 +726,65 @@ export default function App() {
       </h2>
 
       {/* Flight Cost Input */}
-      <div className="bg-gradient-to-br from-[#E8F5F8] to-[#D4E8F0] rounded-2xl p-6 mb-6 border-3 border-[#4A7BA7] shadow-lg print:hidden">
-        <h3 className="font-bold text-[#2E5C8A] mb-4 flex items-center gap-2 text-lg">
-          <Plane size={20} /> 機票費用
+      <div className="bg-white rounded-lg p-5 mb-4 border border-[#E0DDD5] shadow-sm print:hidden">
+        <h3 className="font-bold text-[#2C2C2C] mb-4 flex items-center gap-2 text-base">
+          <Plane size={18} /> 機票費用
         </h3>
         <div className="grid grid-cols-2 gap-4">
           <div>
-            <label className="block text-sm font-bold text-[#2E5C8A] mb-2">每人機票價格 (TWD)</label>
+            <label className="block text-xs font-medium text-[#5A5A5A] mb-2">每人機票價格 (JPY)</label>
             <input
               type="number"
+              inputMode="decimal"
               value={flightCost}
               onChange={(e) => setFlightCost(parseInt(e.target.value) || 0)}
-              className="w-full p-3 bg-white border-2 border-[#7BA3C3] rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-[#4A7BA7] shadow-sm"
+              className="w-full px-3 py-2.5 bg-white border border-[#E0E0E0] rounded text-base font-mono outline-none focus:ring-1 focus:ring-[#8B7355] focus:border-[#8B7355]"
               placeholder="15000"
             />
           </div>
           <div className="flex items-end">
-            <div className="bg-[#D4E8F0] p-4 rounded-xl border-2 border-[#4A7BA7] w-full shadow-sm">
-              <div className="text-xs text-[#2E5C8A] font-bold mb-1">總機票費用</div>
-              <div className="text-2xl font-black text-[#2E5C8A] font-mono">¥{totalFlightCost.toLocaleString()}</div>
-              <div className="text-xs text-[#2E5C8A] mt-1">{INITIAL_PEOPLE.length} 人 × ¥{flightCost.toLocaleString()}</div>
+            <div className="bg-[#FAF8F5] p-3 rounded border border-[#E8E4DC] w-full">
+              <div className="text-[10px] text-[#5A5A5A] font-medium mb-1">總機票費用</div>
+              <div className="text-xl font-bold text-[#2C2C2C] font-mono">¥{totalFlightCost.toLocaleString()}</div>
+              <div className="text-[10px] text-[#5A5A5A] mt-1">{INITIAL_PEOPLE.length} 人 × ¥{flightCost.toLocaleString()}</div>
             </div>
           </div>
         </div>
       </div>
 
       {/* Accommodation Cost Input */}
-      <div className="bg-gradient-to-br from-[#FFF0F3] to-[#FFE8F0] rounded-2xl p-6 mb-6 border-3 border-[#FFB7C5] shadow-lg print:hidden">
-        <h3 className="font-bold text-[#A99BBD] mb-4 flex items-center gap-2 text-lg">
-          <Home size={20} /> 住宿費用
+      <div className="bg-white rounded-lg p-5 mb-4 border border-[#E0DDD5] shadow-sm print:hidden">
+        <h3 className="font-bold text-[#2C2C2C] mb-4 flex items-center gap-2 text-base">
+          <Home size={18} /> 住宿費用
         </h3>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 gap-3">
           <div>
-            <label className="block text-sm font-bold text-[#A99BBD] mb-2">每晚價格 (TWD)</label>
+            <label className="block text-xs font-medium text-[#5A5A5A] mb-2">每晚價格 (JPY)</label>
             <input
               type="number"
+              inputMode="decimal"
               value={accommodationCostPerNight}
               onChange={(e) => setAccommodationCostPerNight(parseInt(e.target.value) || 0)}
-              className="w-full p-3 bg-white border-2 border-[#D4C4DD] rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-[#FFB7C5] shadow-sm"
+              className="w-full px-3 py-2.5 bg-white border border-[#E0E0E0] rounded text-base font-mono outline-none focus:ring-1 focus:ring-[#8B7355] focus:border-[#8B7355]"
               placeholder="3000"
             />
           </div>
           <div>
-            <label className="block text-sm font-bold text-[#A99BBD] mb-2">住宿天數</label>
+            <label className="block text-xs font-medium text-[#5A5A5A] mb-2">住宿天數</label>
             <input
               type="number"
+              inputMode="decimal"
               value={numberOfNights}
               onChange={(e) => setNumberOfNights(parseInt(e.target.value) || 0)}
-              className="w-full p-3 bg-white border-2 border-[#D4C4DD] rounded-xl text-lg font-mono outline-none focus:ring-2 focus:ring-[#FFB7C5] shadow-sm"
+              className="w-full px-3 py-2.5 bg-white border border-[#E0E0E0] rounded text-base font-mono outline-none focus:ring-1 focus:ring-[#8B7355] focus:border-[#8B7355]"
               placeholder="6"
             />
           </div>
           <div className="flex items-end">
-            <div className="bg-[#FFE8F0] p-4 rounded-xl border-2 border-[#FFB7C5] w-full shadow-sm">
-              <div className="text-xs text-[#A99BBD] font-bold mb-1">總住宿費用</div>
-              <div className="text-2xl font-black text-[#A99BBD] font-mono">¥{totalAccommodationCost.toLocaleString()}</div>
-              <div className="text-xs text-[#A99BBD] mt-1">{numberOfNights} 晚 × ¥{accommodationCostPerNight.toLocaleString()}</div>
+            <div className="bg-[#FAF8F5] p-3 rounded border border-[#E8E4DC] w-full">
+              <div className="text-[10px] text-[#5A5A5A] font-medium mb-1">總住宿費用</div>
+              <div className="text-xl font-bold text-[#2C2C2C] font-mono">¥{totalAccommodationCost.toLocaleString()}</div>
+              <div className="text-[10px] text-[#5A5A5A] mt-1">{numberOfNights} 晚 × ¥{accommodationCostPerNight.toLocaleString()}</div>
             </div>
           </div>
         </div>
@@ -815,49 +835,90 @@ export default function App() {
       </div>
 
       {/* Public Fund Overview Card */}
-      <div className="bg-gradient-to-br from-[#93AA6D] to-[#C5D8A4] rounded-3xl p-6 text-white shadow-xl mb-6 relative overflow-hidden border-4 border-[#C5D8A4]">
-        <div className="absolute right-0 top-0 opacity-10"><Wallet size={120} /></div>
-        <div className="absolute -right-8 -bottom-8 opacity-5"><Camera size={180} /></div>
-        <div className="relative z-10">
-           <p className="text-green-100 text-sm font-bold tracking-wider mb-1">公積金餘額</p>
-           <div className="text-4xl font-bold font-mono mb-1">¥{remainingFund.toLocaleString()}</div>
-           <div className="flex items-center gap-2 text-green-100 text-sm mb-4">
-             {remainingFund >= publicFundTotal * 0.5 ? (
-               <><TrendingUp size={14} /> 充足</>
-             ) : remainingFund >= publicFundTotal * 0.2 ? (
-               <><TrendingDown size={14} /> 注意</>
-             ) : (
-               <><AlertCircle size={14} /> 不足</>
-             )}
-           </div>
-           <div className="flex gap-1 h-3 bg-green-900/30 rounded-full overflow-hidden border-2 border-green-300/50">
-              <div
-                style={{ width: `${100 - spentPercentage}%` }}
-                className={`transition-all duration-500 ${
-                  spentPercentage < 50 ? 'bg-green-200' :
-                  spentPercentage < 80 ? 'bg-yellow-300' :
-                  'bg-red-400'
-                }`}
-              />
-           </div>
-           <div className="flex justify-between text-xs mt-2 text-green-100 font-mono">
-              <span>已用: ¥{totalSpent.toLocaleString()} ({spentPercentage.toFixed(1)}%)</span>
-              <span>總額: ¥{publicFundTotal.toLocaleString()}</span>
-           </div>
+      <div className="bg-white rounded-lg p-5 mb-4 border border-[#E0DDD5] shadow-sm print:hidden">
+        <div className="flex justify-between items-start mb-4">
+          <h3 className="font-bold text-[#2C2C2C] flex items-center gap-2 text-base">
+            <Wallet size={18} /> 公積金餘額
+          </h3>
+          {!isEditingFund ? (
+            <button
+              onClick={() => setIsEditingFund(true)}
+              className="text-xs text-[#8B7355] hover:text-[#2C2C2C] transition-colors flex items-center gap-1"
+            >
+              <Edit size={12} /> 設定
+            </button>
+          ) : null}
         </div>
+
+        {isEditingFund ? (
+          <div className="space-y-3">
+            <div>
+              <label className="block text-xs font-medium text-[#5A5A5A] mb-2">公積金總額 (JPY)</label>
+              <input
+                type="number"
+                inputMode="decimal"
+                value={tempFundTotal}
+                onChange={(e) => setTempFundTotal(parseInt(e.target.value) || 0)}
+                className="w-full px-3 py-2.5 bg-white border border-[#E0E0E0] rounded text-base font-mono outline-none focus:ring-1 focus:ring-[#8B7355] focus:border-[#8B7355]"
+                placeholder="150000"
+              />
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={savePublicFundTotal}
+                className="flex-1 bg-[#2C2C2C] text-white py-2 rounded text-sm font-medium hover:bg-[#1A1A1A] transition-colors"
+              >
+                儲存
+              </button>
+              <button
+                onClick={() => { setIsEditingFund(false); setTempFundTotal(publicFundTotal); }}
+                className="px-4 py-2 bg-white text-[#2C2C2C] border border-[#E0E0E0] rounded text-sm font-medium hover:bg-[#F9F9F9] transition-colors"
+              >
+                取消
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            <div className="text-3xl font-bold font-mono text-[#2C2C2C] mb-3">¥{remainingFund.toLocaleString()}</div>
+            <div className="flex items-center gap-2 text-xs text-[#5A5A5A] mb-3">
+              {remainingFund >= publicFundTotal * 0.5 ? (
+                <><TrendingUp size={12} className="text-[#93AA6D]" /> <span className="text-[#93AA6D]">充足</span></>
+              ) : remainingFund >= publicFundTotal * 0.2 ? (
+                <><TrendingDown size={12} className="text-[#F39C6B]" /> <span className="text-[#F39C6B]">注意</span></>
+              ) : (
+                <><AlertCircle size={12} className="text-[#D32F2F]" /> <span className="text-[#D32F2F]">不足</span></>
+              )}
+            </div>
+            <div className="h-2 bg-[#F5F1E8] rounded-full overflow-hidden">
+               <div
+                 style={{ width: `${100 - spentPercentage}%` }}
+                 className={`h-full transition-all duration-500 ${
+                   spentPercentage < 50 ? 'bg-[#93AA6D]' :
+                   spentPercentage < 80 ? 'bg-[#F39C6B]' :
+                   'bg-[#D32F2F]'
+                 }`}
+               />
+            </div>
+            <div className="flex justify-between text-[10px] mt-2 text-[#5A5A5A] font-mono">
+               <span>已用: ¥{totalSpent.toLocaleString()} ({spentPercentage.toFixed(1)}%)</span>
+               <span>總額: ¥{publicFundTotal.toLocaleString()}</span>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Add Expense Form */}
-      <div className="print:hidden bg-gradient-to-br from-white to-purple-50 p-6 rounded-2xl border-3 border-purple-300 shadow-lg mb-6">
-        <h3 className="font-bold text-purple-800 mb-4 flex items-center gap-2 text-lg">
-          <Plus size={20} /> 新增支出
+      <div className="print:hidden bg-white rounded-lg p-5 border border-[#E0DDD5] shadow-sm mb-6">
+        <h3 className="font-bold text-[#2C2C2C] mb-4 flex items-center gap-2 text-base">
+          <Plus size={18} /> 新增支出
         </h3>
         <div className="grid grid-cols-5 gap-3 mb-3">
            <div className="col-span-2">
              <select
                value={expenseForm.payer}
                onChange={(e) => setExpenseForm({...expenseForm, payer: e.target.value})}
-               className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+               className="w-full px-3 py-2.5 bg-white border border-[#E0E0E0] rounded text-sm outline-none focus:ring-1 focus:ring-[#8B7355] focus:border-[#8B7355]"
              >
                <option value="公積金">公積金</option>
                {INITIAL_PEOPLE.map(p => <option key={p} value={p}>{p}</option>)}
@@ -866,10 +927,11 @@ export default function App() {
            <div className="col-span-3">
               <input
                 type="number"
-                placeholder="金額"
+                inputMode="decimal"
+                placeholder="金額 (JPY)"
                 value={expenseForm.amount}
                 onChange={(e) => setExpenseForm({...expenseForm, amount: e.target.value})}
-                className="w-full p-3 bg-white border-2 border-purple-300 rounded-xl text-sm outline-none font-mono focus:ring-2 focus:ring-purple-500 shadow-sm"
+                className="w-full px-3 py-2.5 bg-white border border-[#E0E0E0] rounded text-sm outline-none font-mono focus:ring-1 focus:ring-[#8B7355] focus:border-[#8B7355]"
               />
            </div>
         </div>
@@ -879,11 +941,11 @@ export default function App() {
              placeholder="項目 (例: 章魚燒)"
              value={expenseForm.desc}
              onChange={(e) => setExpenseForm({...expenseForm, desc: e.target.value})}
-             className="flex-1 p-3 bg-white border-2 border-purple-300 rounded-xl text-sm outline-none focus:ring-2 focus:ring-purple-500 shadow-sm"
+             className="flex-1 px-3 py-2.5 bg-white border border-[#E0E0E0] rounded text-sm outline-none focus:ring-1 focus:ring-[#8B7355] focus:border-[#8B7355]"
            />
            <button
              onClick={addExpense}
-             className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-6 rounded-xl font-bold text-sm hover:from-green-600 hover:to-emerald-600 transition-all shadow-lg flex items-center gap-2"
+             className="bg-[#2C2C2C] text-white px-6 rounded font-medium text-sm hover:bg-[#1A1A1A] transition-colors flex items-center gap-2"
            >
              <Plus size={16} /> 記帳
            </button>
@@ -955,7 +1017,7 @@ export default function App() {
         }
       `}</style>
 
-      <div className="min-h-screen bg-[#FAFAF9] font-['Noto_Sans_TC'] text-[#2C2C2C]">
+      <div className="min-h-screen bg-[#F5F1E8] font-['Noto_Sans_TC'] text-[#2C2C2C]">
 
         {/* Header */}
         <header className="bg-white border-b border-[#E0E0E0] sticky top-0 z-50 print:relative">
